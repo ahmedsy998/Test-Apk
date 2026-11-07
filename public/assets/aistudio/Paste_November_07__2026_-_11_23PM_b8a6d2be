@@ -1,0 +1,1405 @@
+MASTER PROMPT V2 — SYRIATEL NEXT-GENERATION MOBILE APPLICATION
+
+1. PROJECT OVERVIEW
+
+Act as a world-class Senior UI/UX Designer, Mobile Application Architect, and Expert Frontend Developer.
+
+Your task is to design and build a premium, modern, fully interactive mobile application for SyriaTel, a Syrian telecommunications company.
+
+The application must deliver an exceptional user experience comparable to premium telecommunications applications such as MySTC, My Orange, and Vodafone.
+
+This must be a fully functional interactive application prototype, NOT a static UI mockup.
+
+Build the complete application with working navigation, interactive components, realistic sample data, functional buttons, expandable sections, forms, dialogs, charts, and smooth transitions.
+
+Prioritize:
+
+- Premium visual identity.
+- Exceptional UI/UX quality.
+- Fast performance and lightweight architecture.
+- Simple and intuitive navigation.
+- Consistent design language.
+- Beautiful typography and spacing.
+- Mobile-first responsive layouts.
+- Smooth animations without unnecessary performance overhead.
+- Intelligent information organization.
+- Seamless integration between all application sections.
+
+2. BRAND IDENTITY & DESIGN SYSTEM
+
+Use the uploaded SyriaTel logo image as the primary brand reference.
+
+IMPORTANT LOGO INSTRUCTIONS
+
+- Extract and isolate the original SyriaTel logo from the uploaded image.
+- Remove the surrounding red rounded rectangular border.
+- Remove unnecessary white space surrounding the logo.
+- Preserve the original Arabic typography, logo structure, colors, and identity.
+- Preserve the original green accent and red/gray brand elements.
+- Do not redesign the logo or replace it with a generic telecommunications icon.
+- Create a clean, high-quality logo presentation suitable for a premium mobile application.
+- Use the isolated logo consistently throughout the application.
+
+Color Palette
+
+Build the entire design system around the original SyriaTel logo colors.
+
+Primary Red: #D71920
+Dark Red: #A90F18
+Brand Green: #16A765
+Charcoal Gray: #414141
+Secondary Gray: #777777
+Background: #F7F8FA
+Surface: #FFFFFF
+Border: #E9EAED
+
+Use red strategically for primary actions, active navigation, highlights, and important indicators.
+
+Use green for successful transactions, active services, positive balance indicators, and confirmation states.
+
+Avoid excessive colors, strong gradients, or visually overwhelming elements.
+
+Visual Style
+
+Use a premium, sophisticated design language featuring:
+
+- Clean layouts.
+- Soft shadows.
+- Rounded cards.
+- Subtle borders.
+- Beautiful typography.
+- Carefully balanced whitespace.
+- Elegant iconography.
+- Modern bottom navigation.
+- Smooth micro-interactions.
+- Subtle animated transitions.
+
+Use a professional Arabic font such as IBM Plex Sans Arabic or Tajawal.
+
+Ensure Arabic text is perfectly rendered with correct RTL alignment and spacing.
+
+The application must support both Arabic and English.
+
+Arabic is the default language.
+
+3. APPLICATION STRUCTURE
+
+Create the following complete application.
+
+SCREEN 1 — SPLASH / WELCOME SCREEN
+
+Create an impressive introductory screen.
+
+Requirements:
+
+- Use the extracted original SyriaTel logo prominently.
+- Add a sophisticated modern technological background.
+- Use subtle abstract communication waves, network patterns, digital particles, and elegant geometric elements.
+- The background must complement the logo without competing with it.
+- Use a premium red, white, charcoal, and subtle green visual palette.
+- Add a subtle logo entrance animation.
+- Add the text:
+
+"سيريتل"
+
+"كل ما يهمك في مكان واحد"
+
+The screen should feel premium, modern, and recognizable as an official telecommunications application.
+
+Automatically transition to the authentication screen after a short introductory animation.
+
+SCREEN 2 — AUTHENTICATION
+
+Create two separate authentication interfaces:
+
+A. CREATE ACCOUNT
+B. LOGIN
+
+Both authentication flows are demonstration-only.
+
+No real authentication server or backend is required.
+
+However, all forms, buttons, validation messages, and navigation must work correctly.
+
+A. CREATE ACCOUNT SCREEN
+
+Design a beautiful, clean registration interface.
+
+Include:
+
+1. First Name input field.
+   Placeholder: "الاسم"
+
+2. Last Name input field.
+   Placeholder: "الكنية"
+
+3. Phone Number input field.
+   Placeholder: "09xxxxxxxx"
+
+4. Password input field.
+   Include a show/hide password icon.
+
+5. Verification Code section.
+   
+   - A compact input field for the verification code.
+   - A small clickable text button labeled "إرسال الرمز".
+   - When clicked, activate a 60-second countdown.
+   - Display the remaining time.
+   - Disable the resend button during the countdown.
+   - Allow sending another code after the countdown finishes.
+   - For this demo, generate a simulated verification code and provide appropriate demo feedback.
+
+6. A prominent red primary button:
+   "التسجيل"
+
+7. A secondary text link:
+   "لديك حساب بالفعل؟ تسجيل الدخول"
+
+Validation:
+
+- Required fields must not be empty.
+- Validate the Syrian mobile number format.
+- Password must meet a reasonable minimum length.
+- Display clear and elegant validation messages.
+
+When the user clicks "التسجيل", validate the form and navigate to the Home Screen.
+
+B. LOGIN SCREEN
+
+Create a premium login interface consistent with the registration screen.
+
+Include:
+
+1. Phone Number field.
+   Placeholder: "09xxxxxxxx"
+
+2. Password field.
+   Include a show/hide password icon.
+
+3. A small checkbox labeled:
+   "تذكرني"
+
+4. A prominent red button:
+   "تسجيل الدخول"
+
+5. A secondary link:
+   "إنشاء حساب جديد"
+
+When the user clicks "تسجيل الدخول", validate the input and navigate to the Home Screen.
+
+Remember: This is a simulated authentication experience. Do not implement real authentication or claim to connect to SyriaTel servers.
+
+SCREEN 3 — HOME DASHBOARD
+
+This is the most important screen.
+
+Create a visually impressive, information-rich but uncluttered dashboard.
+
+The interface must be easy to understand at a glance.
+
+A. TOP HEADER
+
+Create a modern horizontal header.
+
+Right side:
+
+- Circular user profile avatar.
+- Greeting text:
+  "أهلاً أحمد"
+- A smaller subtitle:
+  "يسعدنا وجودك معنا"
+
+Center:
+
+- Original isolated SyriaTel logo.
+- Keep the logo proportions accurate and visually balanced.
+
+Left side:
+
+- Notification bell icon.
+- Settings gear icon.
+
+Interactions:
+
+Notification icon:
+Open the Notifications screen.
+
+Settings icon:
+Open the Settings screen.
+
+Profile avatar:
+Open the Premium Profile screen.
+
+Include a small notification badge when unread notifications exist.
+
+B. ADVERTISEMENT BANNER CAROUSEL
+
+Directly below the header, create a premium promotional banner carousel.
+
+Requirements:
+
+- Large attractive promotional cards.
+- Rounded corners.
+- High-quality advertising visuals.
+- Red, white, and green brand accents.
+- Clear promotional headlines.
+- Short supporting descriptions.
+- Call-to-action buttons.
+- Smooth horizontal swipe transitions.
+- Pagination indicators.
+- Automatic sliding with a reasonable interval.
+
+Use realistic example campaigns, such as:
+
+- Internet package offers.
+- Special seasonal offers.
+- Discounted minutes.
+- Exclusive customer promotions.
+
+Use attractive placeholder promotional images if actual campaign images are unavailable.
+
+C. ACCOUNT BALANCE CARD
+
+Directly below the advertisement carousel, create an elegant balance card.
+
+Display:
+
+"الرصيد المتوفر"
+
+Example balance:
+"25,000 ل.س"
+
+Display the expiration date:
+"تاريخ انتهاء الصلاحية: 30/12/2026"
+
+Include a small wallet icon and an optional balance visibility toggle.
+
+The balance card should be visually prominent without being oversized.
+
+Add a convenient "شحن الرصيد" shortcut that opens the simulated recharge interface.
+
+D. ACTIVE PACKAGE USAGE
+
+Below the balance card, create a dedicated usage section.
+
+Title:
+"استهلاك باقاتك"
+
+Display three separate usage cards:
+
+1. INTERNET
+
+- Available data.
+- Used data.
+- Total package capacity.
+- Elegant circular or linear progress indicator.
+
+Example:
+8 GB remaining / 12 GB.
+
+2. CALL MINUTES
+
+- Remaining minutes.
+- Used minutes.
+- Total minutes.
+
+Example:
+250 minutes remaining / 500 minutes.
+
+3. SMS MESSAGES
+
+- Remaining messages.
+- Used messages.
+- Total messages.
+
+Example:
+120 messages remaining / 200 messages.
+
+Use clean progress indicators with carefully chosen colors.
+
+All values must be driven by sample application state, not hardcoded separately in multiple places.
+
+Add a "عرض التفاصيل" action that opens the Smart Usage Center.
+
+E. QUICK ACTIONS — SMART SHORTCUTS
+
+Add a dedicated Quick Actions section on the Home Dashboard.
+
+Section title:
+"الوضع السريع"
+
+Subtitle:
+"خدماتك الأساسية بلمسة واحدة"
+
+Design four elegant shortcut cards in a balanced 2x2 grid.
+
+Each shortcut must have a professional icon, short Arabic title, subtle brand-colored background, and interactive feedback.
+
+Quick Action 1 — Recharge Balance
+
+Title:
+"شحن الرصيد"
+
+Icon:
+Wallet / Credit Card.
+
+Action:
+Open a dedicated simulated balance recharge screen.
+
+Include:
+
+- Phone number.
+- Recharge amount.
+- Suggested recharge amounts.
+- Custom amount input.
+- Recharge confirmation dialog.
+- Simulated transaction result.
+
+Clearly identify the recharge as a demonstration operation.
+
+Quick Action 2 — Know My Number
+
+Title:
+"معرفة رقمي"
+
+Icon:
+Smartphone / SIM Card.
+
+Action:
+Open a beautiful modal displaying the currently registered demonstration phone number.
+
+Include a copy-number button.
+
+Quick Action 3 — Activate Packages
+
+Title:
+"تفعيل الباقات"
+
+Icon:
+Package / Zap.
+
+Action:
+Navigate directly to the Offers section with available package categories.
+
+Quick Action 4 — Manage Services
+
+Title:
+"إدارة الخدمات"
+
+Icon:
+Settings / Sliders.
+
+Action:
+Navigate directly to the Services screen.
+
+The Quick Actions section must be compact and visually integrated into the Home Dashboard.
+
+Do not overcrowd the screen.
+
+F. BOTTOM NAVIGATION BAR
+
+Create a premium fixed bottom navigation bar.
+
+It must remain visible while scrolling.
+
+Include four primary destinations:
+
+1. الرئيسية
+   Home icon.
+
+2. العروض
+   Gift or offers icon.
+
+3. الخدمات
+   Grid or services icon.
+
+4. سيريتل كاش
+   Wallet icon.
+
+Requirements:
+
+- Highlight the active destination using SyriaTel red.
+- Use elegant line icons.
+- Display Arabic labels.
+- Smooth active-state transitions.
+- Maintain a comfortable touch area.
+- Respect Android safe-area insets.
+
+The bottom navigation must work correctly and preserve the application state when switching sections.
+
+SCREEN 4 — OFFERS
+
+Create a dedicated Offers page.
+
+Page title:
+"العروض"
+
+At the top, display a horizontally scrollable category selector.
+
+Categories:
+
+1. الإنترنت
+2. الرسائل
+3. الدقائق
+4. ميكس
+5. عروض خاصة
+6. عرض ذكرى سنوية خطك
+
+Each category must be interactive.
+
+When a category is selected:
+
+- Display only the offers belonging to that category.
+- Highlight the selected category.
+- Update the displayed offer cards without reloading the entire screen.
+
+Offer Cards
+
+Each offer card should include:
+
+- Offer name.
+- Attractive promotional visual.
+- Short description.
+- Package size or benefits.
+- Price.
+- Validity period.
+- A prominent action button labeled "التفاصيل" or "اشترك الآن".
+
+Create realistic demonstration offers using clearly labeled sample data.
+
+When the user clicks an offer:
+Open a detailed offer screen or bottom sheet showing all information and a simulated subscription confirmation.
+
+Do not imply that a real subscription has been activated.
+
+SCREEN 5 — SERVICES
+
+Create a clean and organized Services screen.
+
+Page title:
+"الخدمات"
+
+Use expandable accordion sections.
+
+Each section must expand and collapse smoothly when clicked.
+
+SECTION A — الخدمات الأساسية
+
+Include the following services:
+
+1. خدمة إعدادات الإنترنت
+2. خدمة سنة صلاحية
+3. خدمة ستوب
+4. خدمة رنة بغنية
+5. خدمة الكاشف الدائم
+
+Every service must have:
+
+- Service name.
+- Appropriate icon.
+- Short explanatory description.
+- Current activation status.
+- An interactive activation/deactivation switch.
+
+Requirements:
+
+- Active services should display a green status indicator.
+- Inactive services should display a neutral status indicator.
+- Switching the control must immediately update its visual state.
+- Display a confirmation dialog when activating or deactivating a service.
+- Persist the changed state during the current application session.
+
+SECTION B — خدمات منوعة
+
+Include:
+
+1. خدمة الأخبار
+2. خدمة التقنية
+3. خدمة الرياضة
+4. خدمة إسلاميات
+
+Apply exactly the same interactive behavior as the Basic Services section.
+
+The accordion design must be elegant, compact, and easy to navigate.
+
+SCREEN 6 — SYRIATEL CASH
+
+Create a dedicated SyriaTel Cash interface.
+
+Page title:
+"سيريتل كاش"
+
+Create an attractive financial-services landing page with a clean wallet-inspired design.
+
+Include two prominent action cards:
+
+1. إنشاء حساب
+   Icon: User Plus.
+
+2. تسجيل الدخول
+   Icon: Wallet or Log In.
+
+When clicking "إنشاء حساب":
+Open a dedicated simulated account creation form.
+
+When clicking "تسجيل الدخول":
+Open a dedicated simulated login form.
+
+Include an attractive introductory section explaining that SyriaTel Cash provides convenient electronic payment services.
+
+IMPORTANT:
+This is a UI/UX prototype only. Do not process real payments, collect banking credentials, or simulate successful financial transfers.
+
+Clearly identify all financial operations as demonstration-only.
+
+SCREEN 7 — SMART USAGE CENTER
+
+Create a dedicated, premium Smart Usage Center.
+
+Page title:
+"مركز الاستهلاك الذكي"
+
+Subtitle:
+"راقب استهلاكك وتحكم بباقاتك بذكاء"
+
+This screen must provide a comprehensive overview of the user's Internet, call minutes, and SMS consumption.
+
+A. USAGE OVERVIEW
+
+At the top, create three attractive summary cards:
+
+1. الإنترنت
+2. الدقائق
+3. الرسائل
+
+Each card must display:
+
+- Total package capacity.
+- Used amount.
+- Remaining amount.
+- Percentage consumed.
+- Elegant circular progress indicator.
+
+Use the same sample data displayed on the Home Dashboard to maintain consistency.
+
+B. USAGE DETAILS
+
+Create three detailed sections.
+
+INTERNET USAGE:
+
+- Total Internet allowance.
+- Used data.
+- Remaining data.
+- Daily average consumption.
+- Estimated remaining usage duration.
+- Usage percentage.
+
+CALL MINUTES:
+
+- Total available minutes.
+- Used minutes.
+- Remaining minutes.
+- Average daily call duration.
+- Usage percentage.
+
+SMS USAGE:
+
+- Total available messages.
+- Used messages.
+- Remaining messages.
+- Average daily message consumption.
+- Usage percentage.
+
+C. DAILY AND WEEKLY STATISTICS
+
+Add an interactive statistics section.
+
+Title:
+"إحصائيات الاستهلاك"
+
+Include a segmented selector:
+
+- يومي
+- أسبوعي
+
+When Daily is selected:
+Display a chart showing the user's daily Internet, call, and SMS consumption.
+
+When Weekly is selected:
+Display a chart showing the consumption trends over the last seven days.
+
+Use:
+
+- Interactive bar charts or line charts.
+- Clear labels.
+- Readable numerical values.
+- Proper Arabic RTL presentation.
+- Brand-consistent chart colors.
+- Attractive tooltips when interacting with chart data.
+
+Include a separate selector to switch between:
+
+- الإنترنت
+- الدقائق
+- الرسائل
+
+The selected metric should update the chart accordingly.
+
+D. SMART INSIGHTS
+
+Add an intelligent insights section.
+
+Title:
+"تحليلات ذكية"
+
+Generate useful insights from the demonstration usage data.
+
+Examples:
+
+- "استهلاك الإنترنت لديك أعلى بنسبة 15% من متوسط الأسبوع الماضي."
+- "يتبقى لديك 8 GB من باقة الإنترنت."
+- "استهلاكك اليومي من الدقائق ضمن المعدل الطبيعي."
+- "يمكنك الاستفادة من باقة إضافية قبل انتهاء الباقة الحالية."
+
+All insights must be calculated from sample application data rather than random static statements.
+
+Include visual indicators for:
+
+- Normal usage.
+- High usage.
+- Low remaining balance.
+- Packages approaching expiration.
+
+E. USAGE ALERTS
+
+Allow users to configure optional usage alerts.
+
+Examples:
+
+- Notify me when 50% of my Internet package is consumed.
+- Notify me when 80% is consumed.
+- Notify me when 90% is consumed.
+- Notify me when my package is nearly expired.
+
+All alert controls must be interactive and saved in application preferences.
+
+F. QUICK NAVIGATION
+
+Add convenient actions:
+
+- عرض العروض المناسبة.
+- إدارة الخدمات.
+- العودة إلى الرئيسية.
+
+The Smart Usage Center must feel like a sophisticated analytics dashboard, not a basic information page.
+
+SCREEN 8 — OPERATIONS CENTER
+
+Create a dedicated Operations Center.
+
+Page title:
+"مركز العمليات"
+
+Subtitle:
+"تابع جميع عملياتك وسجل نشاط خطك"
+
+This screen provides a chronological history of demonstration operations performed inside the application.
+
+A. OPERATIONS SUMMARY
+
+At the top, display compact summary cards:
+
+- إجمالي العمليات.
+- العمليات الناجحة.
+- العمليات قيد المعالجة.
+
+Use attractive statistics cards with small professional icons.
+
+B. TRANSACTION HISTORY
+
+Create a clean chronological transaction list.
+
+Support the following operation types:
+
+1. شحن الرصيد
+2. تفعيل باقة إنترنت
+3. تفعيل باقة دقائق
+4. تفعيل خدمة
+5. إيقاف خدمة
+6. تعديل إعدادات الحساب
+7. تسجيل الدخول
+8. عمليات سيريتل كاش التجريبية
+
+Each transaction item must display:
+
+- Operation icon.
+- Operation title.
+- Date and time.
+- Relevant description.
+- Amount, when applicable.
+- Transaction reference number.
+- Operation status.
+
+Possible statuses:
+
+- ناجحة.
+- قيد المعالجة.
+- ملغاة.
+- فاشلة.
+
+Use distinct but subtle visual status indicators.
+
+C. FILTERS
+
+Add an interactive filter bar.
+
+Filters:
+
+- الكل.
+- الشحن.
+- الباقات.
+- الخدمات.
+- الحساب.
+- سيريتل كاش.
+
+Add a date filter:
+
+- اليوم.
+- آخر 7 أيام.
+- آخر 30 يوماً.
+
+Selecting filters must update the transaction list immediately.
+
+D. OPERATION DETAILS
+
+When a transaction is selected, open a detailed operation screen or bottom sheet.
+
+Display:
+
+- Operation name.
+- Transaction reference.
+- Date and time.
+- Operation details.
+- Amount when applicable.
+- Status.
+- Additional information.
+
+Include a copy-reference button.
+
+E. DATA MANAGEMENT
+
+All demonstration operations performed within the application must automatically generate corresponding entries in the Operations Center.
+
+Examples:
+
+- When a user activates a service, add an activation entry.
+- When a user deactivates a service, add a deactivation entry.
+- When a user simulates a recharge, add a recharge entry.
+- When a user simulates a package subscription, add a subscription entry.
+- When a user changes relevant account settings, record the action when appropriate.
+
+Use a centralized transaction history state.
+
+Do not fabricate real financial transactions or claim that real carrier operations occurred.
+
+Clearly identify the entire transaction history as demonstration data.
+
+SCREEN 9 — PREMIUM PROFILE
+
+Create a premium user profile experience.
+
+Page title:
+"الملف الشخصي"
+
+This page must feel sophisticated, personal, and visually distinctive.
+
+It should be accessible by tapping the user avatar in the Home Dashboard or through User Information in Settings.
+
+A. PROFILE HEADER
+
+Create a beautiful profile header featuring:
+
+- Large circular user avatar.
+- User's first and last name.
+- Registered phone number.
+- Small account status indicator.
+- An elegant edit profile action.
+
+Example:
+
+"أحمد محمد"
+
+"09xxxxxxxx"
+
+"حساب تجريبي"
+
+Use a refined background inspired by the SyriaTel brand identity.
+
+Avoid oversized decorative elements.
+
+B. LINE INFORMATION CARD
+
+Create a dedicated card titled:
+
+"معلومات الخط"
+
+Display:
+
+- رقم الهاتف.
+- نوع الخط.
+- نوع الاشتراك.
+- حالة الخط.
+- تاريخ تفعيل الخط.
+- تاريخ انتهاء الصلاحية.
+- رقم العميل التجريبي.
+
+Use realistic demonstration values.
+
+C. SUBSCRIPTION INFORMATION
+
+Create a separate section titled:
+
+"تفاصيل الاشتراك"
+
+Display:
+
+- Current subscription type.
+- Active Internet package.
+- Active minutes package.
+- Active SMS package.
+- Package renewal or expiration date.
+- Active services count.
+
+Each item must be visually organized and easy to read.
+
+D. ACCOUNT STATISTICS
+
+Create a compact account statistics area showing:
+
+- عدد الخدمات المفعّلة.
+- عدد الباقات النشطة.
+- إجمالي العمليات التجريبية.
+- أيام استخدام الخط.
+
+Use elegant small statistic cards.
+
+E. PROFILE ACTIONS
+
+Include:
+
+1. تعديل المعلومات الشخصية.
+2. إدارة الخدمات.
+3. مركز الاستهلاك الذكي.
+4. مركز العمليات.
+5. إعدادات الأمان.
+
+Each action must navigate to its corresponding application screen.
+
+F. EDIT PROFILE
+
+When the user clicks Edit Profile, open an editable form.
+
+Fields:
+
+- First name.
+- Last name.
+- Phone number, read-only by default.
+- Profile picture selection or simulated avatar selection.
+
+Include Save and Cancel buttons.
+
+Changes must update the Home Dashboard greeting and Premium Profile immediately.
+
+Persist editable demonstration profile information in local storage.
+
+SCREEN 10 — NOTIFICATIONS
+
+Create a dedicated Notifications page.
+
+Include:
+
+- Page title: "الإشعارات".
+- Notification cards.
+- Notification icons.
+- Notification timestamps.
+- Read and unread visual states.
+
+Example notification categories:
+
+- العروض.
+- الخدمات.
+- أمان الحساب.
+- تسجيل الدخول إلى جهاز جديد.
+- استهلاك الباقات.
+- انتهاء صلاحية الباقة.
+
+Include:
+
+- Mark all as read.
+- Clear notifications.
+- Empty state when no notifications exist.
+
+Usage alerts generated by the Smart Usage Center should also appear here when their configured thresholds are reached.
+
+SCREEN 11 — SETTINGS
+
+Create a premium Settings dashboard.
+
+At the top:
+
+- Settings title.
+- A day/night theme toggle icon.
+
+Include the following settings:
+
+1. اللغة
+
+Allow the user to switch between:
+
+- العربية
+- English
+
+This must be a real application-wide language switch.
+
+When English is selected:
+
+- Translate all interface labels.
+- Change the layout direction to LTR.
+- Update navigation labels.
+- Update form labels and notifications.
+- Update charts and statistics labels.
+
+When Arabic is selected:
+
+- Restore Arabic labels.
+- Restore RTL layout.
+
+Preserve the selected language during the current application session and save it in local storage.
+
+2. معلومات المستخدم
+
+Open the Premium Profile screen or a dedicated User Information screen.
+
+Display:
+
+- Profile picture.
+- First name.
+- Last name.
+- Phone number.
+- Account information.
+
+Provide an Edit button and editable demonstration fields.
+
+3. إعدادات الأمان
+
+Open a dedicated Security Settings screen.
+
+Include:
+
+- Change password.
+- Current password.
+- New password.
+- Confirm new password.
+- Show/hide password controls.
+- Additional security protection option.
+
+Include an additional security option such as biometric protection or application PIN lock, presented as a prototype setting.
+
+4. إعدادات الإشعارات
+
+Create a dedicated notification preferences page.
+
+Display four independent toggle controls:
+
+- العروض
+- الخدمات
+- أمان الحساب
+- تسجيل الدخول إلى جهاز جديد
+
+Each option must have its own switch.
+
+Allow users to enable or disable each notification category independently.
+
+5. خدمة الزبائن
+
+Open a dedicated Customer Support page.
+
+Include:
+
+- Customer support information.
+- Frequently asked questions.
+- Contact options.
+- Support request form.
+
+Use simulated interactions only.
+
+6. سياسة الخصوصية وشروط الاستخدام
+
+Create two separate readable pages:
+
+- سياسة الخصوصية.
+- شروط الاستخدام.
+
+Use clean typography and a comfortable reading layout.
+
+7. تسجيل الخروج
+
+At the bottom of the main Settings screen, create a prominent red rounded button:
+
+"تسجيل الخروج"
+
+When clicked:
+
+- Show a confirmation dialog.
+- If confirmed, return to the authentication screen.
+- Reset the authenticated session state.
+
+SCREEN 12 — DARK MODE
+
+Implement a complete dark theme.
+
+The theme toggle must be available at the top of the main Settings screen.
+
+Light theme:
+
+- White and light-gray surfaces.
+- Red primary actions.
+- Dark readable text.
+
+Dark theme:
+
+- Deep charcoal backgrounds.
+- Slightly lighter charcoal cards.
+- Soft white typography.
+- Carefully adjusted red and green accents.
+- Proper contrast.
+
+IMPORTANT:
+Dark mode must apply consistently across ALL screens, cards, forms, charts, navigation bars, dialogs, and settings pages.
+
+Do not simply invert colors.
+
+4. UX & INTERACTION REQUIREMENTS
+
+The application must feel like a real, professionally engineered mobile product.
+
+Implement:
+
+- Smooth page transitions.
+- Subtle card animations.
+- Button press feedback.
+- Interactive toggles.
+- Expandable accordion sections.
+- Functional carousel navigation.
+- Form validation.
+- Confirmation dialogs.
+- Toast notifications.
+- Loading states when appropriate.
+- Empty states.
+- Error states.
+- Persistent bottom navigation.
+- Consistent back navigation.
+- Proper keyboard handling.
+- Scrollable pages.
+- Safe-area support.
+- Interactive data charts.
+- Real-time local state updates.
+- Consistent navigation between related screens.
+
+Avoid unnecessary animations that negatively affect performance.
+
+Every visible interactive element must perform its intended action.
+
+Do not create decorative buttons that do nothing.
+
+CROSS-SCREEN INTEGRATION REQUIREMENTS
+
+The four new major features must be deeply integrated with the existing application.
+
+Examples:
+
+1. The Home Dashboard balance card must connect to the Recharge Balance shortcut.
+
+2. The Home Dashboard usage cards must connect to the Smart Usage Center.
+
+3. The Premium Profile must display the same user information used by the Home Dashboard and Settings.
+
+4. The Operations Center must automatically receive entries from simulated operations performed in other sections.
+
+5. The Smart Usage Center must use the same package data shown on the Home Dashboard.
+
+6. Usage alerts must generate notifications when their thresholds are reached in the demonstration data.
+
+7. Quick Actions must navigate directly to their corresponding destinations.
+
+8. Editing the user profile must immediately update the application header.
+
+9. Switching language must update every screen, including newly added sections.
+
+10. Switching themes must update every component and chart consistently.
+
+Maintain one centralized source of truth for all shared application data.
+
+5. TECHNICAL IMPLEMENTATION
+
+Build the application using a clean, modular architecture.
+
+Preferred stack:
+
+- React.
+- TypeScript.
+- Modern CSS.
+- Lucide Icons.
+- Responsive mobile-first components.
+
+Use reusable components for:
+
+- Header.
+- Bottom navigation.
+- Cards.
+- Input fields.
+- Buttons.
+- Modals.
+- Accordions.
+- Toggle switches.
+- Notification items.
+- Progress indicators.
+- Promotional banners.
+- Usage charts.
+- Statistics cards.
+- Transaction history items.
+- Profile information cards.
+- Quick action shortcuts.
+
+Architecture requirements:
+
+- Separate components from application logic.
+- Use centralized application state.
+- Avoid duplicated code.
+- Keep the code organized and maintainable.
+- Optimize rendering and avoid unnecessary re-renders.
+- Use local storage where appropriate to preserve demo preferences and application state.
+- Avoid unnecessary external dependencies.
+
+Create centralized data models for:
+
+- User profile.
+- Account balance.
+- Active packages.
+- Internet usage.
+- Call usage.
+- SMS usage.
+- Active services.
+- Offers.
+- Notifications.
+- Transactions.
+- Usage alerts.
+- Application preferences.
+
+Use reusable state management and data update functions.
+
+The application must run directly in the Google AI Studio preview environment.
+
+Do not depend on external APIs, backend servers, or paid services.
+
+DATA CONSISTENCY
+
+All sections must read from shared data sources.
+
+For example:
+
+If the Internet remaining balance changes, update:
+
+- Home Dashboard.
+- Smart Usage Center.
+- Usage charts.
+- Usage insights.
+- Relevant notifications.
+
+If a service is activated or deactivated, update:
+
+- Services screen.
+- Premium Profile active services count.
+- Operations Center history.
+
+If user information changes, update:
+
+- Home Dashboard greeting.
+- Premium Profile.
+- Settings user information.
+
+Do not create isolated static values for each screen.
+
+6. PERFORMANCE REQUIREMENTS
+
+Performance is a major priority.
+
+The application must:
+
+- Load quickly.
+- Scroll smoothly.
+- Respond immediately to user interactions.
+- Avoid unnecessary network requests.
+- Use lightweight assets.
+- Avoid oversized images.
+- Minimize expensive animations.
+- Avoid memory leaks.
+- Maintain smooth performance on mid-range Android devices.
+
+Optimize the experience for devices with 60Hz and 120Hz displays.
+
+Charts must be lightweight and efficiently rendered.
+
+Avoid unnecessary dependencies for simple interface elements.
+
+7. RESPONSIVE DESIGN
+
+Design primarily for modern Android smartphones.
+
+Support:
+
+- 360px mobile screens.
+- 390px mobile screens.
+- 412px mobile screens.
+- Larger smartphone displays.
+- Tablet layouts where appropriate.
+
+Ensure that:
+
+- No horizontal overflow occurs.
+- Text never overlaps.
+- Cards adapt to screen width.
+- Buttons remain comfortable to tap.
+- Navigation remains accessible.
+- Arabic RTL alignment is correct.
+- Charts remain readable on narrow screens.
+- Quick Action cards maintain balanced dimensions.
+- Profile information remains organized.
+- Long transaction histories scroll smoothly.
+
+8. FINAL DESIGN QUALITY
+
+The final application should look like a real, premium telecommunications application developed by a professional product design team.
+
+The visual experience must be:
+
+- Modern.
+- Elegant.
+- Minimal.
+- Sophisticated.
+- Highly readable.
+- Visually consistent.
+- Easy to navigate.
+- Professional rather than generic.
+
+Avoid:
+
+- Generic dashboard templates.
+- Excessive gradients.
+- Excessive glassmorphism.
+- Oversized typography.
+- Cluttered layouts.
+- Inconsistent spacing.
+- Random colors.
+- Unnecessary decorative elements.
+- Emoji as replacements for professional icons.
+
+Use a consistent 8-point spacing system.
+
+Maintain a clear typography hierarchy and consistent component dimensions.
+
+PREMIUM DESIGN CONSISTENCY
+
+The new Smart Usage Center, Quick Actions, Operations Center, and Premium Profile must follow the exact same design system as the original application.
+
+Do not make the new pages look like separate applications.
+
+Use consistent:
+
+- Card radius.
+- Shadows.
+- Typography.
+- Icon sizes.
+- Button heights.
+- Spacing.
+- Section headers.
+- Navigation transitions.
+- Color usage.
+
+The Home Dashboard should remain clean and organized even after adding the new shortcuts.
+
+Prioritize visual hierarchy and avoid displaying too much information at once.
+
+Use expandable sections, compact summaries, and dedicated detail screens whenever appropriate.
+
+9. FINAL EXECUTION INSTRUCTIONS
+
+Do not just explain how the application could be built.
+
+Actually BUILD the application.
+
+Start by creating the complete design system and application structure, then implement all screens and interactions.
+
+Do not stop after creating the Home Screen.
+
+Do not leave navigation destinations empty.
+
+Do not use placeholder buttons without functionality.
+
+Do not omit any of the requested sections.
+
+All screens must be accessible and interconnected.
+
+Use realistic demonstration data throughout the application.
+
+If a feature requires a real SyriaTel backend, implement a clearly labeled simulated version instead of pretending that the real service is connected.
+
+FINAL QUALITY ASSURANCE
+
+After implementation:
+
+1. Test all navigation destinations.
+2. Test Arabic RTL and English LTR.
+3. Test light and dark modes.
+4. Test the registration and login flows.
+5. Test the 60-second verification countdown.
+6. Test all service activation switches.
+7. Test all offer categories.
+8. Test notification preferences.
+9. Test the logout flow.
+10. Test Quick Actions.
+11. Test the Smart Usage Center charts and filters.
+12. Test daily and weekly statistics.
+13. Test usage insights and alerts.
+14. Test transaction history and filters.
+15. Test automatic transaction recording.
+16. Test Premium Profile editing.
+17. Verify synchronization of user information across all screens.
+18. Verify synchronization of package data across all screens.
+19. Test all interactive buttons and confirmation dialogs.
+20. Fix all runtime errors and visual inconsistencies.
+
+FINAL GOAL
+
+Deliver a complete, beautiful, responsive, interactive SyriaTel mobile application prototype with an exceptional user experience.
+
+The application must combine:
+
+- A premium Home Dashboard.
+- Complete Offers and Services sections.
+- SyriaTel Cash interface.
+- Smart Usage Center.
+- Quick Actions.
+- Operations Center.
+- Premium Profile.
+- Notifications.
+- Advanced Settings.
+- Complete Dark Mode.
+- Arabic and English support.
+
+The result should feel like an official next-generation SyriaTel application, not a basic website or a generic template.
+
+Design quality, usability, performance, data consistency, and brand identity are non-negotiable.
+
+Build the entire application, not just a visual demonstration of its Home Screen.

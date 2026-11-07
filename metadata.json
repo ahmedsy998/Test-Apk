@@ -1,0 +1,6 @@
+{
+  "name": "SyriaTel",
+  "description": "Next-generation SyriaTel mobile application prototype with smart usage analytics, offers, services, SyriaTel Cash, and full Arabic/English & Dark Mode support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
