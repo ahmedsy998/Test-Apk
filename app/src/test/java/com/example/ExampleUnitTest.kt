@@ -54,5 +54,39 @@ class ExampleUnitTest {
     assertFalse(vm.uiState.value.isArabic)
     vm.toggleDarkMode()
     assertTrue(vm.uiState.value.isDarkMode)
+
+    // 7. Promotional Banners have distinct valid drawable image resources
+    val banners = com.example.model.SyriaTelSampleData.promoBanners
+    assertEquals(6, banners.size)
+    assertEquals(6, banners.map { it.imageRes }.distinct().size)
+
+    // 8. Multi-Account System: Add second account, verify isolated data, switch back and forth, and remove
+    val account1Balance = vm.uiState.value.balanceSyp
+    val account1Phone = vm.uiState.value.userProfile.phoneNumber
+    assertTrue(vm.uiState.value.canAddAnotherAccount)
+    assertEquals(1, vm.uiState.value.savedAccounts.size)
+
+    vm.addSecondAccount("سارة", "الحموي", "0988654321")
+    assertEquals(2, vm.uiState.value.savedAccounts.size)
+    assertFalse(vm.uiState.value.canAddAnotherAccount)
+    assertEquals("acc_2", vm.uiState.value.activeAccountId)
+    assertEquals("0988654321", vm.uiState.value.userProfile.phoneNumber)
+    assertNotEquals(account1Balance, vm.uiState.value.balanceSyp)
+
+    // Recharge on Account 2 should not affect Account 1
+    val acc2InitialBal = vm.uiState.value.balanceSyp
+    vm.rechargeBalance("0988654321", 5000)
+    assertEquals(acc2InitialBal + 5000, vm.uiState.value.balanceSyp)
+
+    // Switch back to Account 1
+    vm.switchAccount("acc_1")
+    assertEquals("acc_1", vm.uiState.value.activeAccountId)
+    assertEquals(account1Phone, vm.uiState.value.userProfile.phoneNumber)
+    assertEquals(account1Balance, vm.uiState.value.balanceSyp)
+
+    // Remove inactive Account 2
+    vm.removeAccount("acc_2")
+    assertEquals(1, vm.uiState.value.savedAccounts.size)
+    assertTrue(vm.uiState.value.canAddAnotherAccount)
   }
 }

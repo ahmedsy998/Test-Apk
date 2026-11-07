@@ -250,7 +250,28 @@ fun SyriaTelApp(
                                     onOpenCustomerSupport = { viewModel.navigateTo(AppScreen.CUSTOMER_SUPPORT) },
                                     onOpenPrivacyPolicy = { viewModel.navigateTo(AppScreen.PRIVACY_POLICY) },
                                     onOpenTermsOfUse = { viewModel.navigateTo(AppScreen.TERMS_OF_USE) },
-                                    onConfirmLogout = { viewModel.logout() }
+                                    onConfirmLogout = { viewModel.logout() },
+                                    onOpenAddAccount = { viewModel.navigateTo(AppScreen.ADD_ACCOUNT) },
+                                    onSwitchAccount = { accId -> viewModel.switchAccount(accId, context) },
+                                    onRemoveAccount = { accId -> viewModel.removeAccount(accId, context) }
+                                )
+                            }
+
+                            AppScreen.ADD_ACCOUNT -> {
+                                AddAccountScreen(
+                                    isArabic = uiState.isArabic,
+                                    isDarkMode = uiState.isDarkMode,
+                                    existingPhones = uiState.savedAccounts.map { it.userProfile.phoneNumber },
+                                    onBack = { viewModel.navigateBack() },
+                                    onAddAccountSuccess = { fName, lName, phone ->
+                                        viewModel.addSecondAccount(
+                                            firstName = fName,
+                                            lastName = lName,
+                                            phone = phone,
+                                            switchImmediately = true,
+                                            context = context
+                                        )
+                                    }
                                 )
                             }
 

@@ -2,8 +2,9 @@ package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,11 +23,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +41,7 @@ import com.example.ui.theme.SyriatelGreen
 import com.example.ui.theme.SyriatelRed
 import com.example.viewmodel.SyriatelUiState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -67,7 +70,7 @@ fun HomeDashboardScreen(
             .padding(bottom = 24.dp)
             .testTag("home_dashboard_screen")
     ) {
-        // A. TOP HEADER
+        // A. TOP HEADER (Redesigned with Phone Number & Precisely Centered Logo)
         HomeTopHeader(
             userProfile = uiState.userProfile,
             isArabic = isArabic,
@@ -78,9 +81,9 @@ fun HomeDashboardScreen(
             onSettingsClick = onOpenSettings
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        // B. ADVERTISEMENT BANNER CAROUSEL
+        // B. ADVERTISEMENT BANNER CAROUSEL (Upgraded with Dedicated Promotional Images)
         PromoBannerCarousel(
             banners = SyriaTelSampleData.promoBanners,
             isArabic = isArabic,
@@ -196,30 +199,29 @@ private fun HomeTopHeader(
         tonalElevation = 1.dp,
         shadowElevation = 2.dp
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
-            // Start side (Right in Arabic RTL): Profile Avatar + Greeting + Subtitle
+            // Start side (Right in Arabic RTL): Avatar + Greeting + Phone Number
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .weight(1.15f)
+                    .align(Alignment.CenterStart)
+                    .widthIn(max = 152.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .clickable { onProfileClick() }
-                    .padding(vertical = 2.dp)
+                    .padding(vertical = 2.dp, horizontal = 2.dp)
                     .testTag("header_profile_action")
             ) {
                 UserAvatarCircle(
                     name = userProfile.displayFirstName(isArabic),
                     colorIndex = userProfile.avatarColorIndex,
-                    size = 44.dp
+                    size = 42.dp
                 )
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
                         text = if (isArabic) {
@@ -227,28 +229,34 @@ private fun HomeTopHeader(
                         } else {
                             "Hello ${userProfile.displayFirstName(false)}"
                         },
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (isArabic) "يسعدنا وجودك معنا" else "Glad to have you with us",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = userProfile.phoneNumber,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.4.sp
+                        ),
+                        color = SyriatelRed,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.testTag("header_phone_number")
                     )
                 }
             }
 
-            // Center: Original isolated SyriaTel logo
+            // Center: Original isolated SyriaTel logo precisely centered horizontally
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.align(Alignment.Center)
             ) {
                 SyriaTelBrandLogo(
-                    height = 32.dp,
+                    height = 34.dp,
                     isDarkMode = isDarkMode
                 )
             }
@@ -257,12 +265,12 @@ private fun HomeTopHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
-                modifier = Modifier.weight(0.95f)
+                modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 IconButton(
                     onClick = onNotificationsClick,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(44.dp)
                         .testTag("header_notifications_button")
                 ) {
                     BadgedBox(
@@ -288,7 +296,7 @@ private fun HomeTopHeader(
                 IconButton(
                     onClick = onSettingsClick,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(44.dp)
                         .testTag("header_settings_button")
                 ) {
                     Icon(
@@ -309,11 +317,15 @@ private fun PromoBannerCarousel(
     onBannerAction: (OfferCategory) -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { banners.size })
+    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(pagerState.currentPage) {
-        delay(4500L)
-        val next = (pagerState.currentPage + 1) % banners.size
-        pagerState.animateScrollToPage(next)
+    // Automatic sliding that pauses during user interaction
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && banners.isNotEmpty()) {
+            delay(4500L)
+            val next = (pagerState.currentPage + 1) % banners.size
+            pagerState.animateScrollToPage(next)
+        }
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -323,13 +335,13 @@ private fun PromoBannerCarousel(
             pageSpacing = 12.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(176.dp)
+                .height(192.dp)
         ) { page ->
             val banner = banners[page]
             Card(
                 onClick = { onBannerAction(banner.targetCategory) },
                 shape = RoundedCornerShape(22.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .testTag("promo_banner_$page")
@@ -346,30 +358,19 @@ private fun PromoBannerCarousel(
                             )
                         )
                 ) {
-                    // Decorative geometric circles
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        drawCircle(
-                            color = Color.White.copy(alpha = 0.08f),
-                            radius = size.height * 0.65f,
-                            center = Offset(size.width * 0.15f, size.height * 0.2f)
-                        )
-                        drawCircle(
-                            color = Color.White.copy(alpha = 0.06f),
-                            radius = size.height * 0.45f,
-                            center = Offset(size.width * 0.85f, size.height * 0.85f)
-                        )
-                    }
-
-                    Column(
-                        verticalArrangement = Arrangement.SpaceBetween,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(18.dp)
+                            .padding(14.dp)
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                        // Text & CTA side (~56% width)
+                        Column(
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .weight(0.56f)
+                                .fillMaxHeight()
                         ) {
                             Surface(
                                 color = Color.White.copy(alpha = 0.22f),
@@ -377,49 +378,44 @@ private fun PromoBannerCarousel(
                             ) {
                                 Text(
                                     text = banner.badge.get(isArabic),
-                                    style = MaterialTheme.typography.labelMedium.copy(
+                                    style = MaterialTheme.typography.labelSmall.copy(
                                         color = Color.White,
                                         fontWeight = FontWeight.Bold
                                     ),
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                 )
                             }
 
-                            Icon(
-                                imageVector = Icons.Filled.CellTower,
-                                contentDescription = null,
-                                tint = Color.White.copy(alpha = 0.7f),
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
+                            Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                                Text(
+                                    text = banner.title.get(isArabic),
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        lineHeight = 22.sp
+                                    ),
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = banner.description.get(isArabic),
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = Color.White.copy(alpha = 0.92f),
+                                        fontSize = 11.5.sp,
+                                        lineHeight = 16.sp
+                                    ),
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
 
-                        Column {
-                            Text(
-                                text = banner.title.get(isArabic),
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = banner.description.get(isArabic),
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color.White.copy(alpha = 0.9f)
-                                ),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
                             Surface(
                                 color = Color.White,
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(10.dp),
+                                shadowElevation = 2.dp
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -430,10 +426,34 @@ private fun PromoBannerCarousel(
                                         style = MaterialTheme.typography.labelMedium.copy(
                                             color = Color(banner.accentHex),
                                             fontWeight = FontWeight.Bold
-                                        )
+                                        ),
+                                        maxLines = 1
                                     )
                                 }
                             }
+                        }
+
+                        // Dedicated Promotional Image side (~44% width)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .weight(0.44f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.White.copy(alpha = 0.28f),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                        ) {
+                            Image(
+                                painter = painterResource(id = banner.imageRes),
+                                contentDescription = banner.title.get(isArabic),
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .testTag("promo_banner_image_$page")
+                            )
                         }
                     }
                 }
@@ -442,7 +462,7 @@ private fun PromoBannerCarousel(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Pagination Dots
+        // Interactive Pagination Dots
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -453,13 +473,18 @@ private fun PromoBannerCarousel(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 3.dp)
-                        .height(6.dp)
-                        .width(if (isSelected) 22.dp else 6.dp)
+                        .height(7.dp)
+                        .width(if (isSelected) 24.dp else 7.dp)
                         .clip(CircleShape)
                         .background(
                             if (isSelected) SyriatelRed
                             else MaterialTheme.colorScheme.outlineVariant
                         )
+                        .clickable {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
                 )
             }
         }
@@ -932,7 +957,7 @@ fun RechargeBalanceScreen(
     onConfirmRecharge: (String, Int) -> Unit
 ) {
     val isArabic = uiState.isArabic
-    var phone by remember { mutableStateOf(uiState.userProfile.phoneNumber) }
+    var phone by remember(uiState.userProfile.phoneNumber) { mutableStateOf(uiState.userProfile.phoneNumber) }
     val presetAmounts = listOf(5000, 10000, 25000, 50000)
     var selectedAmount by remember { mutableIntStateOf(10000) }
     var customAmountText by remember { mutableStateOf("") }

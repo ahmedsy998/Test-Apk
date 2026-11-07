@@ -1,6 +1,7 @@
 package com.example.model
 
-import androidx.compose.ui.graphics.Color
+import androidx.annotation.DrawableRes
+import com.example.R
 
 data class BiText(val ar: String, val en: String) {
     fun get(isArabic: Boolean): String = if (isArabic) ar else en
@@ -10,6 +11,7 @@ enum class AppScreen {
     SPLASH,
     LOGIN,
     REGISTER,
+    ADD_ACCOUNT,
     HOME,
     OFFERS,
     SERVICES,
@@ -49,6 +51,29 @@ data class UserProfile(
         if (isArabic) "$firstName $lastName" else "${firstNameEn.ifBlank { firstName }} ${lastNameEn.ifBlank { lastName }}"
 }
 
+/**
+ * Isolated per-account state for the Multi-Account Management System (up to 2 accounts).
+ */
+data class AccountSnapshot(
+    val accountId: String,
+    val userProfile: UserProfile,
+    val balanceSyp: Int,
+    val balanceExpiryDate: String,
+    val internetRemainingGb: Float,
+    val internetTotalGb: Float,
+    val internetDailyAvgGb: Float,
+    val internetEstRemainingDays: Int,
+    val minutesRemaining: Int,
+    val minutesTotal: Int,
+    val minutesDailyAvg: Int,
+    val smsRemaining: Int,
+    val smsTotal: Int,
+    val smsDailyAvg: Int,
+    val services: List<ServiceItem>,
+    val notifications: List<AppNotification>,
+    val transactions: List<OperationRecord>
+)
+
 data class PromoBanner(
     val id: String,
     val badge: BiText,
@@ -57,16 +82,17 @@ data class PromoBanner(
     val ctaText: BiText,
     val targetCategory: OfferCategory,
     val accentHex: Long,
-    val secondaryHex: Long
+    val secondaryHex: Long,
+    @DrawableRes val imageRes: Int
 )
 
-enum class OfferCategory(val title: BiText) {
-    INTERNET(BiText("الإنترنت", "Internet")),
-    SMS(BiText("الرسائل", "SMS")),
-    MINUTES(BiText("الدقائق", "Minutes")),
-    MIX(BiText("ميكس", "Mix")),
-    SPECIAL(BiText("عروض خاصة", "Special Offers")),
-    ANNIVERSARY(BiText("عرض ذكرى سنوية خطك", "Line Anniversary"))
+enum class OfferCategory(val title: BiText, @DrawableRes val imageRes: Int) {
+    INTERNET(BiText("الإنترنت", "Internet"), R.drawable.img_promo_internet),
+    SMS(BiText("الرسائل", "SMS"), R.drawable.img_promo_sms),
+    MINUTES(BiText("الدقائق", "Minutes"), R.drawable.img_promo_minutes),
+    MIX(BiText("ميكس", "Mix"), R.drawable.img_promo_mix),
+    SPECIAL(BiText("عروض خاصة", "Special Offers"), R.drawable.img_promo_special),
+    ANNIVERSARY(BiText("عرض ذكرى سنوية خطك", "Line Anniversary"), R.drawable.img_promo_anniversary)
 }
 
 data class OfferItem(

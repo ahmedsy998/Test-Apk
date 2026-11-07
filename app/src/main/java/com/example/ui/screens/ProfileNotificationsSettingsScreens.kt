@@ -902,10 +902,14 @@ fun SettingsScreen(
     onOpenCustomerSupport: () -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
     onOpenTermsOfUse: () -> Unit,
-    onConfirmLogout: () -> Unit
+    onConfirmLogout: () -> Unit,
+    onOpenAddAccount: () -> Unit = {},
+    onSwitchAccount: (String) -> Unit = {},
+    onRemoveAccount: (String) -> Unit = {}
 ) {
     val isArabic = uiState.isArabic
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var accountPendingRemoval by remember { mutableStateOf<AccountSnapshot?>(null) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -916,7 +920,7 @@ fun SettingsScreen(
     ) {
         SyriaTelSubScreenTopBar(
             title = if (isArabic) "الإعدادات" else "Settings",
-            subtitle = if (isArabic) "تخصيص التطبيق واللغة والأمان" else "Customize app theme, language, and security",
+            subtitle = if (isArabic) "تخصيص التطبيق واللغة والأمان وإدارة الحسابات" else "Customize app theme, language, security & accounts",
             onBack = onBack,
             trailingAction = {
                 // Day/Night Theme Toggle Icon at top of Settings screen
@@ -942,6 +946,305 @@ fun SettingsScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
+            // ==========================================
+            // MULTI-ACCOUNT MANAGEMENT ("إدارة الحسابات")
+            // ==========================================
+            Card(
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("account_management_section")
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(SyriatelRed.copy(alpha = 0.1f))
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ManageAccounts,
+                                    contentDescription = null,
+                                    tint = SyriatelRed,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = if (isArabic) "إدارة الحسابات" else "Account Management",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (isArabic) {
+                                        "التبديل السريع بين خطوطك وحساباتك (${uiState.savedAccounts.size}/2)"
+                                    } else {
+                                        "Switch seamlessly between your lines (${uiState.savedAccounts.size}/2)"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Surface(
+                            color = SyriatelRed.copy(alpha = 0.10f),
+                            shape = RoundedCornerShape(50)
+                        ) {
+                            Text(
+                                text = "${uiState.savedAccounts.size} / 2",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = SyriatelRed,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f))
+
+                    // Account Cards (Account 1 & Account 2)
+                    uiState.savedAccounts.forEachIndexed { index, account ->
+                        val isActiveAccount = account.accountId == uiState.activeAccountId
+                        Surface(
+                            shape = RoundedCornerShape(18.dp),
+                            color = if (isActiveAccount) {
+                                SyriatelRed.copy(alpha = if (uiState.isDarkMode) 0.12f else 0.05f)
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+                            },
+                            border = BorderStroke(
+                                width = if (isActiveAccount) 1.5.dp else 1.dp,
+                                color = if (isActiveAccount) SyriatelRed.copy(alpha = 0.65f) else MaterialTheme.colorScheme.outline
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("account_card_${account.accountId}")
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        UserAvatarCircle(
+                                            name = account.userProfile.displayFirstName(isArabic),
+                                            colorIndex = account.userProfile.avatarColorIndex,
+                                            size = 46.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Column {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                            ) {
+                                                Text(
+                                                    text = account.userProfile.displayFullName(isArabic),
+                                                    style = MaterialTheme.typography.titleSmall.copy(
+                                                        fontWeight = FontWeight.Bold
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                                Surface(
+                                                    color = SyriatelGreen.copy(alpha = 0.14f),
+                                                    shape = RoundedCornerShape(50)
+                                                ) {
+                                                    Text(
+                                                        text = account.userProfile.lineStatus.get(isArabic),
+                                                        style = MaterialTheme.typography.labelSmall.copy(
+                                                            color = SyriatelGreen,
+                                                            fontWeight = FontWeight.Bold
+                                                        ),
+                                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Text(
+                                                text = account.userProfile.phoneNumber,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontWeight = FontWeight.SemiBold
+                                                ),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Text(
+                                                text = if (isArabic) {
+                                                    "${account.userProfile.lineType.ar} • ${String.format(Locale.US, "%,d", account.balanceSyp)} ل.س"
+                                                } else {
+                                                    "${account.userProfile.lineType.en} • ${String.format(Locale.US, "%,d", account.balanceSyp)} SYP"
+                                                },
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    if (isActiveAccount) {
+                                        Surface(
+                                            color = SyriatelGreen,
+                                            shape = RoundedCornerShape(50),
+                                            modifier = Modifier.testTag("active_account_badge_${account.accountId}")
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.CheckCircle,
+                                                    contentDescription = null,
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(14.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    text = if (isArabic) "الحساب الحالي" else "Active Account",
+                                                    style = MaterialTheme.typography.labelSmall.copy(
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    } else if (uiState.savedAccounts.size > 1) {
+                                        IconButton(
+                                            onClick = { accountPendingRemoval = account },
+                                            modifier = Modifier
+                                                .size(38.dp)
+                                                .testTag("remove_account_button_${account.accountId}")
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.DeleteOutline,
+                                                contentDescription = if (isArabic) "إزالة الحساب" else "Remove Account",
+                                                tint = SyriatelRed
+                                            )
+                                        }
+                                    }
+                                }
+
+                                if (!isActiveAccount) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Button(
+                                            onClick = { onSwitchAccount(account.accountId) },
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = SyriatelRed,
+                                                contentColor = Color.White
+                                            ),
+                                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(42.dp)
+                                                .testTag("switch_account_button_${account.accountId}")
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.SwapHoriz,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = if (isArabic) "التبديل إلى هذا الحساب" else "Switch to This Account",
+                                                style = MaterialTheme.typography.labelLarge.copy(
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // "إضافة حساب آخر" Button (when fewer than 2 accounts exist)
+                    if (uiState.canAddAnotherAccount) {
+                        OutlinedButton(
+                            onClick = onOpenAddAccount,
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.5.dp, SyriatelRed),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = SyriatelRed),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("add_another_account_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PersonAddAlt1,
+                                contentDescription = null,
+                                tint = SyriatelRed,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isArabic) "إضافة حساب آخر" else "Add Another Account",
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    color = SyriatelRed,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    } else {
+                        Surface(
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Info,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = if (isArabic) {
+                                        "تم الوصول إلى الحد الأقصى للحسابات المحفوظة (حسابان). يمكنك التبديل بينهما أو إزالة الحساب غير النشط لإضافة حساب آخر."
+                                    } else {
+                                        "Maximum of 2 saved accounts reached. Switch between them or remove the inactive account to add a different one."
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             // Theme Card (Screen 12 Dark Mode Switch)
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -1159,6 +1462,46 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+
+    if (accountPendingRemoval != null) {
+        val targetAccount = accountPendingRemoval!!
+        AlertDialog(
+            onDismissRequest = { accountPendingRemoval = null },
+            title = {
+                Text(
+                    text = if (isArabic) "إزالة الحساب المحفوظ" else "Remove Saved Account",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Text(
+                    text = if (isArabic) {
+                        "هل أنت متأكد من رغبتك في إزالة حساب (${targetAccount.userProfile.displayFullName(true)} - ${targetAccount.userProfile.phoneNumber}) من قائمة الحسابات المحفوظة؟"
+                    } else {
+                        "Are you sure you want to remove (${targetAccount.userProfile.displayFullName(false)} - ${targetAccount.userProfile.phoneNumber}) from your saved accounts?"
+                    }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val idToRemove = targetAccount.accountId
+                        accountPendingRemoval = null
+                        onRemoveAccount(idToRemove)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = SyriatelRed),
+                    modifier = Modifier.testTag("confirm_remove_account_dialog_button")
+                ) {
+                    Text(if (isArabic) "إزالة الحساب" else "Remove", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { accountPendingRemoval = null }) {
+                    Text(if (isArabic) "إلغاء" else "Cancel")
+                }
+            }
+        )
     }
 
     if (showLogoutDialog) {

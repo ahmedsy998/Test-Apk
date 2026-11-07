@@ -10,7 +10,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,9 +23,11 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -206,47 +210,101 @@ fun SyriaTelBottomNavigationBar(
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp,
-        shadowElevation = 8.dp,
+        tonalElevation = 4.dp,
+        shadowElevation = 10.dp,
         border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline)
     ) {
-        NavigationBar(
-            containerColor = Color.Transparent,
-            tonalElevation = 0.dp,
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
+                .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             items.forEach { (screen, label, icons) ->
                 val selected = currentScreen == screen
-                NavigationBarItem(
-                    selected = selected,
-                    onClick = { onSelectScreen(screen) },
-                    icon = {
+                val circleBgColor by animateColorAsState(
+                    targetValue = if (selected) {
+                        SyriatelRed.copy(alpha = 0.14f)
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+                    },
+                    animationSpec = tween(durationMillis = 250),
+                    label = "nav_circle_bg"
+                )
+                val iconTint by animateColorAsState(
+                    targetValue = if (selected) SyriatelRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                    animationSpec = tween(durationMillis = 250),
+                    label = "nav_icon_tint"
+                )
+                val scale by animateFloatAsState(
+                    targetValue = if (selected) 1.06f else 1.0f,
+                    animationSpec = tween(durationMillis = 250),
+                    label = "nav_scale"
+                )
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = ripple(bounded = true, color = SyriatelRed)
+                        ) { onSelectScreen(screen) }
+                        .padding(vertical = 4.dp)
+                        .testTag("bottom_nav_${screen.name.lowercase()}")
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(42.dp)
+                            .scale(scale)
+                            .clip(CircleShape)
+                            .background(circleBgColor)
+                            .then(
+                                if (selected) {
+                                    Modifier.border(
+                                        width = 1.2.dp,
+                                        color = SyriatelRed.copy(alpha = 0.38f),
+                                        shape = CircleShape
+                                    )
+                                } else Modifier
+                            )
+                    ) {
                         Icon(
                             imageVector = if (selected) icons.first else icons.second,
-                            contentDescription = label.get(isArabic)
+                            contentDescription = label.get(isArabic),
+                            tint = iconTint,
+                            modifier = Modifier.size(22.dp)
                         )
-                    },
-                    label = {
-                        Text(
-                            text = label.get(isArabic),
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = SyriatelRed,
-                        selectedTextColor = SyriatelRed,
-                        indicatorColor = SyriatelRed.copy(alpha = 0.12f),
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.testTag("bottom_nav_${screen.name.lowercase()}")
-                )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = label.get(isArabic),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                            color = iconTint,
+                            fontSize = 11.5.sp
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Subtle active indicator dot
+                    Box(
+                        modifier = Modifier
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(if (selected) SyriatelRed else Color.Transparent)
+                    )
+                }
             }
         }
     }

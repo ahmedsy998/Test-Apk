@@ -924,3 +924,323 @@ fun RegisterScreen(
         }
     }
 }
+
+@Composable
+fun AddAccountScreen(
+    isArabic: Boolean,
+    isDarkMode: Boolean,
+    existingPhones: List<String>,
+    onBack: () -> Unit,
+    onAddAccountSuccess: (String, String, String) -> Unit
+) {
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var errorText by remember { mutableStateOf<String?>(null) }
+
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .testTag("add_account_screen")
+    ) {
+        com.example.ui.components.SyriaTelSubScreenTopBar(
+            title = if (isArabic) "إضافة حساب آخر" else "Add Another Account",
+            subtitle = if (isArabic) "سجّل دخولك أو أنشئ حساب سيريتل تجريبي ثانٍ" else "Sign in or register a second demo SyriaTel account",
+            onBack = onBack
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .verticalScroll(scrollState)
+                .padding(horizontal = 22.dp, vertical = 18.dp)
+        ) {
+            SyriaTelBrandLogo(
+                height = 50.dp,
+                isDarkMode = isDarkMode
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = if (isArabic) "ربط حساب سيريتل إضافي" else "Link Secondary SyriaTel Account",
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = if (isArabic) {
+                    "سيتم حفظ هذا الحساب ببيانات مستقلة تماماً (رصيد، باقات إنترنت ودقائق ورسائل، خدمات، وسجل عمليات) مع إمكانية التبديل الفوري بين الحسابين."
+                } else {
+                    "This account will be saved with completely independent data (balance, bundles, active services, and operations history) for instant switching."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Quick Demo Preset helper chip
+            OutlinedButton(
+                onClick = {
+                    firstName = if (isArabic) "سارة" else "Sara"
+                    lastName = if (isArabic) "الحموي" else "Al-Hamwi"
+                    phone = "0988654321"
+                    password = "123456"
+                    errorText = null
+                },
+                shape = RoundedCornerShape(50),
+                border = BorderStroke(1.dp, SyriatelRed.copy(alpha = 0.5f)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = SyriatelRed),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                modifier = Modifier.testTag("fill_demo_second_account_button")
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AutoAwesome,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = if (isArabic) "تعبئة بيانات حساب تجريبي ثانٍ (0988654321)" else "Auto-fill Demo Account 2 (0988654321)",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isArabic) "الاسم الأول" else "First Name",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            OutlinedTextField(
+                                value = firstName,
+                                onValueChange = {
+                                    firstName = it
+                                    errorText = null
+                                },
+                                placeholder = { Text(if (isArabic) "الاسم الأول" else "First name") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("add_account_first_name_input")
+                            )
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isArabic) "الكنية" else "Last Name",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            OutlinedTextField(
+                                value = lastName,
+                                onValueChange = {
+                                    lastName = it
+                                    errorText = null
+                                },
+                                placeholder = { Text(if (isArabic) "الكنية" else "Last name") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("add_account_last_name_input")
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = if (isArabic) "رقم الهاتف" else "Phone Number",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = {
+                            if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
+                                phone = it
+                                errorText = null
+                            }
+                        },
+                        placeholder = { Text("09xxxxxxxx") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.PhoneAndroid,
+                                contentDescription = null,
+                                tint = SyriatelRed
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("add_account_phone_input")
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = if (isArabic) "كلمة المرور" else "Password",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            errorText = null
+                        },
+                        placeholder = { Text(if (isArabic) "6 محارف على الأقل" else "At least 6 characters") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Lock,
+                                contentDescription = null,
+                                tint = SyriatelRed
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (isArabic) "إظهار/إخفاء كلمة المرور" else "Toggle password visibility"
+                                )
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("add_account_password_input")
+                    )
+
+                    AnimatedVisibility(visible = errorText != null) {
+                        Surface(
+                            color = SyriatelRed.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ErrorOutline,
+                                    contentDescription = null,
+                                    tint = SyriatelRed,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = errorText.orEmpty(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SyriatelRed
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            val fName = firstName.trim()
+                            val lName = lastName.trim()
+                            val trimmedPhone = phone.trim()
+                            when {
+                                fName.isEmpty() || lName.isEmpty() || trimmedPhone.isEmpty() || password.isBlank() -> {
+                                    errorText = if (isArabic) {
+                                        "يرجى تعبئة الاسم الأول والكنية ورقم الهاتف وكلمة المرور"
+                                    } else {
+                                        "Please fill in first name, last name, phone number, and password"
+                                    }
+                                }
+                                !trimmedPhone.matches(Regex("^09\\d{8}$")) -> {
+                                    errorText = if (isArabic) {
+                                        "يرجى إدخال رقم موبايل سوري صحيح يبدأ بـ 09 ويتكون من 10 أرقام"
+                                    } else {
+                                        "Please enter a valid 10-digit Syrian mobile number starting with 09"
+                                    }
+                                }
+                                existingPhones.contains(trimmedPhone) -> {
+                                    errorText = if (isArabic) {
+                                        "هذا الرقم مسجل بالفعل ضمن الحسابات المحفوظة"
+                                    } else {
+                                        "This phone number is already saved in your accounts"
+                                    }
+                                }
+                                password.length < 6 -> {
+                                    errorText = if (isArabic) {
+                                        "يجب أن تتكون كلمة المرور من 6 محارف على الأقل"
+                                    } else {
+                                        "Password must be at least 6 characters long"
+                                    }
+                                }
+                                else -> {
+                                    onAddAccountSuccess(fName, lName, trimmedPhone)
+                                }
+                            }
+                        },
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SyriatelRed),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("add_account_submit_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.PersonAddAlt1,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (isArabic) "حفظ الحساب والتبديل إليه" else "Save & Switch to Account",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+

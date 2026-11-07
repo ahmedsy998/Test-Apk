@@ -1,11 +1,13 @@
 package com.example.model
 
+import com.example.R
+
 object SyriaTelSampleData {
 
     val promoBanners = listOf(
         PromoBanner(
             id = "banner_1",
-            badge = BiText("عرض حصري 4G+", "4G+ Exclusive"),
+            badge = BiText("عرض حصري 5G/4G+", "5G/4G+ Exclusive"),
             title = BiText("باقة سوبر نت 25 GB", "SuperNet 25 GB Package"),
             description = BiText(
                 "ضاعف سرعتك واستمتع بإنترنت فائق السرعة طوال الشهر بخصم 30%",
@@ -13,12 +15,13 @@ object SyriaTelSampleData {
             ),
             ctaText = BiText("اشترك الآن", "Subscribe Now"),
             targetCategory = OfferCategory.INTERNET,
-            accentHex = 0xFFD71920,
-            secondaryHex = 0xFFA90F18
+            accentHex = 0xFFC5131B,
+            secondaryHex = 0xFF5D070C,
+            imageRes = R.drawable.img_promo_internet
         ),
         PromoBanner(
             id = "banner_2",
-            badge = BiText("عرض موسمي", "Seasonal Offer"),
+            badge = BiText("باقة شاملة", "All-in-One Mix"),
             title = BiText("باقة ميكس الذهبية الشاملة", "Golden All-in-One Mix"),
             description = BiText(
                 "إنترنت + دقائق + رسائل في باقة واحدة متكاملة تناسب جميع احتياجاتك",
@@ -26,34 +29,65 @@ object SyriaTelSampleData {
             ),
             ctaText = BiText("اكتشف العرض", "Explore Offer"),
             targetCategory = OfferCategory.MIX,
-            accentHex = 0xFF16A765,
-            secondaryHex = 0xFF0E7446
+            accentHex = 0xFF12804C,
+            secondaryHex = 0xFF0A3924,
+            imageRes = R.drawable.img_promo_mix
         ),
         PromoBanner(
             id = "banner_3",
-            badge = BiText("هدية سنوية", "Anniversary Gift"),
-            title = BiText("ذكرى سنوية خطك مع سيريتل", "Your SyriaTel Line Anniversary"),
-            description = BiText(
-                "شكراً لثقتك بنا! احصل على 5 GB مجانية و300 دقيقة ضمن الشبكة",
-                "Thank you for your loyalty! Claim 5 GB free data and 300 on-net minutes"
-            ),
-            ctaText = BiText("فعّل هديتك", "Claim Gift"),
-            targetCategory = OfferCategory.ANNIVERSARY,
-            accentHex = 0xFF2B313B,
-            secondaryHex = 0xFFD71920
-        ),
-        PromoBanner(
-            id = "banner_4",
-            badge = BiText("وفّر أكثر", "Save More"),
+            badge = BiText("دقائق بلا حدود", "Voice Minutes"),
             title = BiText("دقائق غير محدودة في عطلة الأسبوع", "Unlimited Weekend Minutes"),
             description = BiText(
-                "تحدث مع عائلتك وأصدقائك بلا حدود على شبكة سيريتل طوال عطلة نهاية الأسبوع",
+                "تحدث مع عائلتك وأصدقائك بلا حدود على شبكة سيريتل طوال عطلة الأسبوع",
                 "Talk endlessly with family and friends across SyriaTel all weekend long"
             ),
             ctaText = BiText("عرض الباقات", "View Bundles"),
             targetCategory = OfferCategory.MINUTES,
-            accentHex = 0xFFB81219,
-            secondaryHex = 0xFF414141
+            accentHex = 0xFF9E1117,
+            secondaryHex = 0xFF23272F,
+            imageRes = R.drawable.img_promo_minutes
+        ),
+        PromoBanner(
+            id = "banner_4",
+            badge = BiText("باقات الرسائل", "SMS Bundles"),
+            title = BiText("باقة 300 رسالة محلية شاملة", "300 All-Network SMS Pack"),
+            description = BiText(
+                "تواصل مع الجميع عبر الرسائل النصية لكافة الشبكات المحلية بأفضل الأسعار",
+                "Stay connected with local SMS messages across all Syrian mobile networks"
+            ),
+            ctaText = BiText("تفعيل الباقة", "Activate Pack"),
+            targetCategory = OfferCategory.SMS,
+            accentHex = 0xFF1F4E79,
+            secondaryHex = 0xFF132639,
+            imageRes = R.drawable.img_promo_sms
+        ),
+        PromoBanner(
+            id = "banner_5",
+            badge = BiText("عروض VIP الخاصة", "VIP Special Offer"),
+            title = BiText("عرض رقمك المميز بخصم 40%", "VIP Tailored Offer 40% Off"),
+            description = BiText(
+                "15 GB إنترنت + 500 دقيقة اتصال مصممة خصيصاً لنمط استهلاكك الشهري",
+                "15 GB Data + 500 Voice Minutes crafted specifically for your monthly usage"
+            ),
+            ctaText = BiText("احصل على العرض", "Claim VIP Offer"),
+            targetCategory = OfferCategory.SPECIAL,
+            accentHex = 0xFF7D1118,
+            secondaryHex = 0xFF281215,
+            imageRes = R.drawable.img_promo_special
+        ),
+        PromoBanner(
+            id = "banner_6",
+            badge = BiText("هدية سنوية", "Anniversary Gift"),
+            title = BiText("ذكرى سنوية خطك مع سيريتل", "Your SyriaTel Line Anniversary"),
+            description = BiText(
+                "شكراً لثقتك بنا! احصل على 5 GB مجانية و250 دقيقة ضمن الشبكة",
+                "Thank you for your loyalty! Claim 5 GB free data and 250 on-net minutes"
+            ),
+            ctaText = BiText("فعّل هديتك", "Claim Gift"),
+            targetCategory = OfferCategory.ANNIVERSARY,
+            accentHex = 0xFF2B313B,
+            secondaryHex = 0xFF8C141A,
+            imageRes = R.drawable.img_promo_anniversary
         )
     )
 
@@ -525,6 +559,96 @@ object SyriaTelSampleData {
         )
     )
 
+    fun createSecondaryDemoAccountSnapshot(
+        firstName: String,
+        lastName: String,
+        phone: String
+    ): AccountSnapshot {
+        return AccountSnapshot(
+            accountId = "acc_2",
+            userProfile = UserProfile(
+                firstName = firstName,
+                lastName = lastName,
+                firstNameEn = firstName,
+                lastNameEn = lastName,
+                phoneNumber = phone,
+                avatarColorIndex = 1,
+                lineType = BiText("خط لاحق الدفع (فواتير)", "Postpaid Line"),
+                subscriptionType = BiText("سيريتل بريميوم بلاتينيوم", "SyriaTel Premium Platinum"),
+                lineStatus = BiText("نشط (حساب تجريبي)", "Active (Demo Account)"),
+                activationDate = "01/09/2024",
+                expiryDate = "31/12/2027",
+                customerNumber = "SYR-7731904",
+                daysUsed = 797
+            ),
+            balanceSyp = 42500,
+            balanceExpiryDate = "31/12/2027",
+            internetRemainingGb = 14.5f,
+            internetTotalGb = 20.0f,
+            internetDailyAvgGb = 0.42f,
+            internetEstRemainingDays = 21,
+            minutesRemaining = 380,
+            minutesTotal = 600,
+            minutesDailyAvg = 22,
+            smsRemaining = 160,
+            smsTotal = 250,
+            smsDailyAvg = 7,
+            services = initialServices.mapIndexed { idx, item ->
+                item.copy(isActive = idx % 2 == 0)
+            },
+            notifications = listOf(
+                AppNotification(
+                    id = "notif_acc2_1",
+                    category = NotificationCategory.OFFERS,
+                    title = BiText("مرحباً بك في حسابك الثاني ($phone)", "Welcome to your secondary line ($phone)"),
+                    message = BiText(
+                        "باقة التيربو 20 GB مفعّلة حالياً على هذا الخط مع رصيد 42,500 ل.س.",
+                        "Turbo 20 GB package is active on this line with 42,500 SYP available balance."
+                    ),
+                    timestampLabel = BiText("اليوم", "Today"),
+                    isRead = false
+                ),
+                AppNotification(
+                    id = "notif_acc2_2",
+                    category = NotificationCategory.USAGE_ALERT,
+                    title = BiText("حالة استهلاك ممتازة", "Optimal Package Usage"),
+                    message = BiText(
+                        "يتبقى لديك 14.5 GB من باقة الإنترنت و380 دقيقة اتصال على هذا الخط.",
+                        "You have 14.5 GB data and 380 voice minutes remaining on this line."
+                    ),
+                    timestampLabel = BiText("منذ ساعة", "1 hour ago"),
+                    isRead = false
+                )
+            ),
+            transactions = listOf(
+                OperationRecord(
+                    id = "op_acc2_201",
+                    referenceNumber = "SYR-OP-881204",
+                    title = BiText("شحن رصيد إلكتروني", "Electronic Balance Top-Up"),
+                    description = BiText("شحن رصيد تجريبي للخط $phone", "Simulated balance top-up for line $phone"),
+                    category = OperationCategory.RECHARGE,
+                    dateTimeLabel = BiText("اليوم • 11:10 ص", "Today • 11:10 AM"),
+                    daysAgo = 0,
+                    amountLabel = BiText("+25,000 ل.س", "+25,000 SYP"),
+                    status = OperationStatus.SUCCESS,
+                    extraNotes = BiText("عملية مسجلة لحساب الخط الثاني ($phone)", "Operation logged for secondary line ($phone)")
+                ),
+                OperationRecord(
+                    id = "op_acc2_202",
+                    referenceNumber = "SYR-OP-881019",
+                    title = BiText("تفعيل باقة 20 GB بلاتينيوم", "Activate 20 GB Platinum Bundle"),
+                    description = BiText("اشتراك شهري في باقة الإنترنت 20 GB", "Monthly subscription to 20 GB Internet Bundle"),
+                    category = OperationCategory.PACKAGES,
+                    dateTimeLabel = BiText("منذ يومين • 05:20 م", "2 days ago • 05:20 PM"),
+                    daysAgo = 2,
+                    amountLabel = BiText("28,000 ل.س", "28,000 SYP"),
+                    status = OperationStatus.SUCCESS,
+                    extraNotes = BiText("بيانات خاصة بالحساب الثاني", "Isolated data for secondary account")
+                )
+            )
+        )
+    }
+
     val faqs = listOf(
         Pair(
             BiText("كيف يمكنني شحن رصيدي أو تفعيل باقة جديدة؟", "How can I recharge my balance or activate a new package?"),
@@ -541,10 +665,10 @@ object SyriaTelSampleData {
             )
         ),
         Pair(
-            BiText("ما هو مركز العمليات؟", "What is the Operations Center?"),
+            BiText("ما هو نظام إدارة الحسابات المتعددة؟", "How does Multi-Account Management work?"),
             BiText(
-                "يوفر مركز العمليات سجلاً زمنياً شاملاً لجميع العمليات التجريبية التي تقوم بها داخل التطبيق مثل الشحن وتفعيل الباقات وإدارة الخدمات مع رقم مرجعي لكل عملية.",
-                "The Operations Center provides a complete chronological log of all demonstration actions performed in the app with reference numbers."
+                "يمكنك من صفحة الإعدادات إضافة حساب ثانٍ والتبديل بين رقمين مختلفين بلمسة واحدة مع حفظ رصيد وباقات وسجل عمليات كل حساب بشكل مستقل.",
+                "From Settings, you can add a second account and switch between two lines in one tap, keeping each account's balance, packages, and operations isolated."
             )
         ),
         Pair(

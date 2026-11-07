@@ -12,6 +12,26 @@ import java.util.Locale
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
+private fun createDefaultPrimarySnapshot(): AccountSnapshot = AccountSnapshot(
+    accountId = "acc_1",
+    userProfile = UserProfile(),
+    balanceSyp = 25000,
+    balanceExpiryDate = "30/12/2026",
+    internetRemainingGb = 8.0f,
+    internetTotalGb = 12.0f,
+    internetDailyAvgGb = 0.58f,
+    internetEstRemainingDays = 14,
+    minutesRemaining = 250,
+    minutesTotal = 500,
+    minutesDailyAvg = 35,
+    smsRemaining = 120,
+    smsTotal = 200,
+    smsDailyAvg = 11,
+    services = SyriaTelSampleData.initialServices,
+    notifications = SyriaTelSampleData.initialNotifications,
+    transactions = SyriaTelSampleData.initialTransactions
+)
+
 data class SyriatelUiState(
     val currentScreen: AppScreen = AppScreen.SPLASH,
     val backStack: List<AppScreen> = emptyList(),
@@ -20,15 +40,19 @@ data class SyriatelUiState(
     val isAuthenticated: Boolean = false,
     val rememberMe: Boolean = true,
 
-    // User Profile
+    // Multi-Account Management State (Up to 2 isolated accounts)
+    val activeAccountId: String = "acc_1",
+    val savedAccounts: List<AccountSnapshot> = listOf(createDefaultPrimarySnapshot()),
+
+    // Active Account User Profile
     val userProfile: UserProfile = UserProfile(),
 
-    // Account Balance
+    // Active Account Balance
     val balanceSyp: Int = 25000,
     val isBalanceVisible: Boolean = true,
     val balanceExpiryDate: String = "30/12/2026",
 
-    // Active Package Usage (Shared across Home & Smart Usage Center & Profile)
+    // Active Account Package Usage (Shared across Home & Smart Usage Center & Profile)
     val internetRemainingGb: Float = 8.0f,
     val internetTotalGb: Float = 12.0f,
     val internetDailyAvgGb: Float = 0.58f,
@@ -46,7 +70,7 @@ data class SyriatelUiState(
     val selectedOfferCategory: OfferCategory = OfferCategory.INTERNET,
     val offers: List<OfferItem> = SyriaTelSampleData.allOffers,
 
-    // Services
+    // Active Account Services
     val services: List<ServiceItem> = SyriaTelSampleData.initialServices,
     val isBasicServicesExpanded: Boolean = true,
     val isVarietyServicesExpanded: Boolean = true,
@@ -56,12 +80,12 @@ data class SyriatelUiState(
     val selectedUsageMetric: UsageMetric = UsageMetric.INTERNET,
     val usageAlerts: UsageAlertsConfig = UsageAlertsConfig(),
 
-    // Operations Center state
+    // Active Account Operations Center state
     val transactions: List<OperationRecord> = SyriaTelSampleData.initialTransactions,
     val selectedOperationCategory: OperationCategory = OperationCategory.ALL,
     val selectedDateFilter: DateFilterOption = DateFilterOption.LAST_30_DAYS,
 
-    // Notifications
+    // Active Account Notifications
     val notifications: List<AppNotification> = SyriaTelSampleData.initialNotifications,
     val notificationPrefs: NotificationPreferences = NotificationPreferences(),
 
@@ -108,9 +132,42 @@ data class SyriatelUiState(
     val unreadNotificationsCount: Int
         get() = notifications.count { !it.isRead }
 
+    val canAddAnotherAccount: Boolean
+        get() = savedAccounts.size < 2
+
     fun formattedBalance(isArabic: Boolean): String {
         val formatted = NumberFormat.getNumberInstance(Locale.US).format(balanceSyp)
         return if (isArabic) "$formatted ل.س" else "$formatted SYP"
+    }
+
+    fun toCurrentAccountSnapshot(): AccountSnapshot = AccountSnapshot(
+        accountId = activeAccountId,
+        userProfile = userProfile,
+        balanceSyp = balanceSyp,
+        balanceExpiryDate = balanceExpiryDate,
+        internetRemainingGb = internetRemainingGb,
+        internetTotalGb = internetTotalGb,
+        internetDailyAvgGb = internetDailyAvgGb,
+        internetEstRemainingDays = internetEstRemainingDays,
+        minutesRemaining = minutesRemaining,
+        minutesTotal = minutesTotal,
+        minutesDailyAvg = minutesDailyAvg,
+        smsRemaining = smsRemaining,
+        smsTotal = smsTotal,
+        smsDailyAvg = smsDailyAvg,
+        services = services,
+        notifications = notifications,
+        transactions = transactions
+    )
+
+    fun withSyncedActiveAccount(): SyriatelUiState {
+        val currentSnap = toCurrentAccountSnapshot()
+        val updatedList = if (savedAccounts.any { it.accountId == activeAccountId }) {
+            savedAccounts.map { if (it.accountId == activeAccountId) currentSnap else it }
+        } else {
+            (savedAccounts + currentSnap).take(2)
+        }
+        return copy(savedAccounts = updatedList)
     }
 
     fun computeSmartInsights(): List<SmartInsight> {
@@ -196,13 +253,74 @@ class SyriaTelViewModel : ViewModel() {
         val prefs = context.getSharedPreferences("syriatel_demo_prefs", Context.MODE_PRIVATE)
         val isArabic = prefs.getBoolean("is_arabic", true)
         val isDark = prefs.getBoolean("is_dark_mode", false)
-        val firstName = prefs.getString("first_name", "أحمد") ?: "أحمد"
-        val lastName = prefs.getString("last_name", "محمد") ?: "محمد"
-        val firstNameEn = prefs.getString("first_name_en", "Ahmad") ?: "Ahmad"
-        val lastNameEn = prefs.getString("last_name_en", "Mohammad") ?: "Mohammad"
-        val phone = prefs.getString("phone_number", "0933123456") ?: "0933123456"
-        val avatarIdx = prefs.getInt("avatar_idx", 0)
-        val balance = prefs.getInt("balance_syp", 25000)
+
+        // Load Account 1
+        val acc1First = prefs.getString("first_name", "أحمد") ?: "أحمد"
+        val acc1Last = prefs.getString("last_name", "محمد") ?: "محمد"
+        val acc1FirstEn = prefs.getString("first_name_en", "Ahmad") ?: "Ahmad"
+        val acc1LastEn = prefs.getString("last_name_en", "Mohammad") ?: "Mohammad"
+        val acc1Phone = prefs.getString("phone_number", "0933123456") ?: "0933123456"
+        val acc1Avatar = prefs.getInt("avatar_idx", 0)
+        val acc1Balance = prefs.getInt("balance_syp", 25000)
+        val acc1NetRem = prefs.getFloat("acc1_net_rem", 8.0f)
+        val acc1NetTot = prefs.getFloat("acc1_net_tot", 12.0f)
+        val acc1MinRem = prefs.getInt("acc1_min_rem", 250)
+        val acc1MinTot = prefs.getInt("acc1_min_tot", 500)
+        val acc1SmsRem = prefs.getInt("acc1_sms_rem", 120)
+        val acc1SmsTot = prefs.getInt("acc1_sms_tot", 200)
+
+        val defaultAcc1 = createDefaultPrimarySnapshot()
+        val acc1Snapshot = defaultAcc1.copy(
+            userProfile = defaultAcc1.userProfile.copy(
+                firstName = acc1First,
+                lastName = acc1Last,
+                firstNameEn = acc1FirstEn,
+                lastNameEn = acc1LastEn,
+                phoneNumber = acc1Phone,
+                avatarColorIndex = acc1Avatar
+            ),
+            balanceSyp = acc1Balance,
+            internetRemainingGb = acc1NetRem,
+            internetTotalGb = acc1NetTot,
+            minutesRemaining = acc1MinRem,
+            minutesTotal = acc1MinTot,
+            smsRemaining = acc1SmsRem,
+            smsTotal = acc1SmsTot
+        )
+
+        val accountsList = mutableListOf(acc1Snapshot)
+
+        // Check if Account 2 was saved
+        val hasAcc2 = prefs.getBoolean("has_acc2", false)
+        if (hasAcc2) {
+            val acc2First = prefs.getString("acc2_first_name", "رامي") ?: "رامي"
+            val acc2Last = prefs.getString("acc2_last_name", "الحسن") ?: "الحسن"
+            val acc2Phone = prefs.getString("acc2_phone_number", "0988765432") ?: "0988765432"
+            val acc2Avatar = prefs.getInt("acc2_avatar_idx", 1)
+            val acc2Balance = prefs.getInt("acc2_balance_syp", 42500)
+            val acc2NetRem = prefs.getFloat("acc2_net_rem", 14.5f)
+            val acc2NetTot = prefs.getFloat("acc2_net_tot", 20.0f)
+            val acc2MinRem = prefs.getInt("acc2_min_rem", 380)
+            val acc2MinTot = prefs.getInt("acc2_min_tot", 600)
+            val acc2SmsRem = prefs.getInt("acc2_sms_rem", 160)
+            val acc2SmsTot = prefs.getInt("acc2_sms_tot", 250)
+
+            val baseAcc2 = SyriaTelSampleData.createSecondaryDemoAccountSnapshot(acc2First, acc2Last, acc2Phone)
+            val acc2Snapshot = baseAcc2.copy(
+                userProfile = baseAcc2.userProfile.copy(avatarColorIndex = acc2Avatar),
+                balanceSyp = acc2Balance,
+                internetRemainingGb = acc2NetRem,
+                internetTotalGb = acc2NetTot,
+                minutesRemaining = acc2MinRem,
+                minutesTotal = acc2MinTot,
+                smsRemaining = acc2SmsRem,
+                smsTotal = acc2SmsTot
+            )
+            accountsList.add(acc2Snapshot)
+        }
+
+        val savedActiveId = prefs.getString("active_account_id", "acc_1") ?: "acc_1"
+        val activeSnap = accountsList.find { it.accountId == savedActiveId } ?: acc1Snapshot
 
         val alert50 = prefs.getBoolean("alert_50", true)
         val alert80 = prefs.getBoolean("alert_80", true)
@@ -218,15 +336,24 @@ class SyriaTelViewModel : ViewModel() {
             state.copy(
                 isArabic = isArabic,
                 isDarkMode = isDark,
-                balanceSyp = balance,
-                userProfile = state.userProfile.copy(
-                    firstName = firstName,
-                    lastName = lastName,
-                    firstNameEn = firstNameEn,
-                    lastNameEn = lastNameEn,
-                    phoneNumber = phone,
-                    avatarColorIndex = avatarIdx
-                ),
+                activeAccountId = activeSnap.accountId,
+                savedAccounts = accountsList,
+                userProfile = activeSnap.userProfile,
+                balanceSyp = activeSnap.balanceSyp,
+                balanceExpiryDate = activeSnap.balanceExpiryDate,
+                internetRemainingGb = activeSnap.internetRemainingGb,
+                internetTotalGb = activeSnap.internetTotalGb,
+                internetDailyAvgGb = activeSnap.internetDailyAvgGb,
+                internetEstRemainingDays = activeSnap.internetEstRemainingDays,
+                minutesRemaining = activeSnap.minutesRemaining,
+                minutesTotal = activeSnap.minutesTotal,
+                minutesDailyAvg = activeSnap.minutesDailyAvg,
+                smsRemaining = activeSnap.smsRemaining,
+                smsTotal = activeSnap.smsTotal,
+                smsDailyAvg = activeSnap.smsDailyAvg,
+                services = activeSnap.services,
+                notifications = activeSnap.notifications,
+                transactions = activeSnap.transactions,
                 usageAlerts = UsageAlertsConfig(
                     alert50Percent = alert50,
                     alert80Percent = alert80,
@@ -245,18 +372,48 @@ class SyriaTelViewModel : ViewModel() {
 
     private fun savePrefs(context: Context?) {
         context ?: return
-        val state = _uiState.value
-        context.getSharedPreferences("syriatel_demo_prefs", Context.MODE_PRIVATE)
-            .edit()
+        val state = _uiState.value.withSyncedActiveAccount()
+        val acc1 = state.savedAccounts.find { it.accountId == "acc_1" } ?: state.toCurrentAccountSnapshot()
+        val acc2 = state.savedAccounts.find { it.accountId == "acc_2" }
+
+        val editor = context.getSharedPreferences("syriatel_demo_prefs", Context.MODE_PRIVATE).edit()
+        editor
             .putBoolean("is_arabic", state.isArabic)
             .putBoolean("is_dark_mode", state.isDarkMode)
-            .putString("first_name", state.userProfile.firstName)
-            .putString("last_name", state.userProfile.lastName)
-            .putString("first_name_en", state.userProfile.firstNameEn)
-            .putString("last_name_en", state.userProfile.lastNameEn)
-            .putString("phone_number", state.userProfile.phoneNumber)
-            .putInt("avatar_idx", state.userProfile.avatarColorIndex)
-            .putInt("balance_syp", state.balanceSyp)
+            .putString("active_account_id", state.activeAccountId)
+            // Account 1
+            .putString("first_name", acc1.userProfile.firstName)
+            .putString("last_name", acc1.userProfile.lastName)
+            .putString("first_name_en", acc1.userProfile.firstNameEn)
+            .putString("last_name_en", acc1.userProfile.lastNameEn)
+            .putString("phone_number", acc1.userProfile.phoneNumber)
+            .putInt("avatar_idx", acc1.userProfile.avatarColorIndex)
+            .putInt("balance_syp", acc1.balanceSyp)
+            .putFloat("acc1_net_rem", acc1.internetRemainingGb)
+            .putFloat("acc1_net_tot", acc1.internetTotalGb)
+            .putInt("acc1_min_rem", acc1.minutesRemaining)
+            .putInt("acc1_min_tot", acc1.minutesTotal)
+            .putInt("acc1_sms_rem", acc1.smsRemaining)
+            .putInt("acc1_sms_tot", acc1.smsTotal)
+            // Account 2
+            .putBoolean("has_acc2", acc2 != null)
+
+        if (acc2 != null) {
+            editor
+                .putString("acc2_first_name", acc2.userProfile.firstName)
+                .putString("acc2_last_name", acc2.userProfile.lastName)
+                .putString("acc2_phone_number", acc2.userProfile.phoneNumber)
+                .putInt("acc2_avatar_idx", acc2.userProfile.avatarColorIndex)
+                .putInt("acc2_balance_syp", acc2.balanceSyp)
+                .putFloat("acc2_net_rem", acc2.internetRemainingGb)
+                .putFloat("acc2_net_tot", acc2.internetTotalGb)
+                .putInt("acc2_min_rem", acc2.minutesRemaining)
+                .putInt("acc2_min_tot", acc2.minutesTotal)
+                .putInt("acc2_sms_rem", acc2.smsRemaining)
+                .putInt("acc2_sms_tot", acc2.smsTotal)
+        }
+
+        editor
             .putBoolean("alert_50", state.usageAlerts.alert50Percent)
             .putBoolean("alert_80", state.usageAlerts.alert80Percent)
             .putBoolean("alert_90", state.usageAlerts.alert90Percent)
@@ -266,6 +423,130 @@ class SyriaTelViewModel : ViewModel() {
             .putBoolean("notif_security", state.notificationPrefs.securityEnabled)
             .putBoolean("notif_device", state.notificationPrefs.newDeviceEnabled)
             .apply()
+    }
+
+    fun addSecondAccount(
+        firstName: String,
+        lastName: String,
+        phone: String,
+        switchImmediately: Boolean = true,
+        context: Context? = null
+    ) {
+        _uiState.update { rawState ->
+            val state = rawState.withSyncedActiveAccount()
+            if (state.savedAccounts.size >= 2) {
+                return@update state.copy(
+                    feedbackMessage = BiText(
+                        "يمكنك إدارة حسابين كحد أقصى في نفس الوقت",
+                        "You can manage up to two accounts at a time"
+                    )
+                )
+            }
+            val newAccId = if (state.savedAccounts.any { it.accountId == "acc_1" }) "acc_2" else "acc_1"
+            val newSnapshot = SyriaTelSampleData.createSecondaryDemoAccountSnapshot(
+                firstName = firstName.trim(),
+                lastName = lastName.trim(),
+                phone = phone.trim()
+            ).copy(accountId = newAccId)
+
+            val updatedAccounts = state.savedAccounts + newSnapshot
+            if (switchImmediately) {
+                state.copy(
+                    activeAccountId = newSnapshot.accountId,
+                    savedAccounts = updatedAccounts,
+                    userProfile = newSnapshot.userProfile,
+                    balanceSyp = newSnapshot.balanceSyp,
+                    balanceExpiryDate = newSnapshot.balanceExpiryDate,
+                    internetRemainingGb = newSnapshot.internetRemainingGb,
+                    internetTotalGb = newSnapshot.internetTotalGb,
+                    internetDailyAvgGb = newSnapshot.internetDailyAvgGb,
+                    internetEstRemainingDays = newSnapshot.internetEstRemainingDays,
+                    minutesRemaining = newSnapshot.minutesRemaining,
+                    minutesTotal = newSnapshot.minutesTotal,
+                    minutesDailyAvg = newSnapshot.minutesDailyAvg,
+                    smsRemaining = newSnapshot.smsRemaining,
+                    smsTotal = newSnapshot.smsTotal,
+                    smsDailyAvg = newSnapshot.smsDailyAvg,
+                    services = newSnapshot.services,
+                    notifications = newSnapshot.notifications,
+                    transactions = newSnapshot.transactions,
+                    currentScreen = AppScreen.SETTINGS,
+                    backStack = state.backStack.filter { it != AppScreen.ADD_ACCOUNT },
+                    feedbackMessage = BiText(
+                        "تمت إضافة الحساب (${newSnapshot.userProfile.phoneNumber}) والتبديل إليه بنجاح",
+                        "Account (${newSnapshot.userProfile.phoneNumber}) added and activated"
+                    )
+                )
+            } else {
+                state.copy(
+                    savedAccounts = updatedAccounts,
+                    currentScreen = AppScreen.SETTINGS,
+                    backStack = state.backStack.filter { it != AppScreen.ADD_ACCOUNT },
+                    feedbackMessage = BiText(
+                        "تمت إضافة الحساب الثاني (${newSnapshot.userProfile.phoneNumber}) بنجاح",
+                        "Secondary account (${newSnapshot.userProfile.phoneNumber}) added successfully"
+                    )
+                )
+            }
+        }
+        savePrefs(context)
+    }
+
+    fun switchAccount(targetAccountId: String, context: Context? = null) {
+        _uiState.update { rawState ->
+            val state = rawState.withSyncedActiveAccount()
+            if (state.activeAccountId == targetAccountId) return@update state
+            val targetSnap = state.savedAccounts.find { it.accountId == targetAccountId } ?: return@update state
+
+            state.copy(
+                activeAccountId = targetSnap.accountId,
+                userProfile = targetSnap.userProfile,
+                balanceSyp = targetSnap.balanceSyp,
+                balanceExpiryDate = targetSnap.balanceExpiryDate,
+                internetRemainingGb = targetSnap.internetRemainingGb,
+                internetTotalGb = targetSnap.internetTotalGb,
+                internetDailyAvgGb = targetSnap.internetDailyAvgGb,
+                internetEstRemainingDays = targetSnap.internetEstRemainingDays,
+                minutesRemaining = targetSnap.minutesRemaining,
+                minutesTotal = targetSnap.minutesTotal,
+                minutesDailyAvg = targetSnap.minutesDailyAvg,
+                smsRemaining = targetSnap.smsRemaining,
+                smsTotal = targetSnap.smsTotal,
+                smsDailyAvg = targetSnap.smsDailyAvg,
+                services = targetSnap.services,
+                notifications = targetSnap.notifications,
+                transactions = targetSnap.transactions,
+                feedbackMessage = BiText(
+                    "تم التبديل إلى حساب ${targetSnap.userProfile.displayFullName(true)} (${targetSnap.userProfile.phoneNumber})",
+                    "Switched to ${targetSnap.userProfile.displayFullName(false)} (${targetSnap.userProfile.phoneNumber})"
+                )
+            )
+        }
+        savePrefs(context)
+    }
+
+    fun removeAccount(targetAccountId: String, context: Context? = null) {
+        _uiState.update { rawState ->
+            val state = rawState.withSyncedActiveAccount()
+            if (targetAccountId == state.activeAccountId) {
+                return@update state.copy(
+                    feedbackMessage = BiText(
+                        "لا يمكن حذف الحساب النشط حالياً. يرجى التبديل إلى الحساب الآخر أولاً.",
+                        "Cannot remove the currently active account. Switch to the other account first."
+                    )
+                )
+            }
+            val removedAcc = state.savedAccounts.find { it.accountId == targetAccountId }
+            val remaining = state.savedAccounts.filter { it.accountId != targetAccountId }
+            state.copy(
+                savedAccounts = remaining,
+                feedbackMessage = BiText(
+                    "تمت إزالة الحساب (${removedAcc?.userProfile?.phoneNumber ?: ""}) بنجاح",
+                    "Account (${removedAcc?.userProfile?.phoneNumber ?: ""}) removed successfully"
+                )
+            )
+        }
+        savePrefs(context)
     }
 
     fun navigateTo(screen: AppScreen, clearStack: Boolean = false) {
@@ -338,7 +619,7 @@ class SyriaTelViewModel : ViewModel() {
                 backStack = emptyList(),
                 transactions = listOf(newTx) + state.transactions,
                 feedbackMessage = BiText("مرحباً بك في تطبيق سيريتل!", "Welcome to SyriaTel!")
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -370,7 +651,7 @@ class SyriaTelViewModel : ViewModel() {
                 backStack = emptyList(),
                 transactions = listOf(newTx) + state.transactions,
                 feedbackMessage = BiText("تم إنشاء حسابك التجريبي بنجاح!", "Your demo account has been created!")
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -382,7 +663,7 @@ class SyriaTelViewModel : ViewModel() {
                 currentScreen = AppScreen.LOGIN,
                 backStack = emptyList(),
                 feedbackMessage = BiText("تم تسجيل الخروج بنجاح", "Logged out successfully")
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -475,7 +756,7 @@ class SyriaTelViewModel : ViewModel() {
                     "تم تفعيل ${offer.name.ar} بنجاح (محاكاة تجريبية)",
                     "${offer.name.en} activated successfully (Demo simulation)"
                 )
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -513,7 +794,7 @@ class SyriaTelViewModel : ViewModel() {
                     "تم شحن الرصيد بقيمة $formattedAmount ل.س (عملية تجريبية)",
                     "Recharged $formattedAmount SYP successfully (Demo operation)"
                 )
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -575,7 +856,7 @@ class SyriaTelViewModel : ViewModel() {
                 } else {
                     BiText("تم إيقاف ${target.name.ar}", "${target.name.en} deactivated")
                 }
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -604,7 +885,7 @@ class SyriaTelViewModel : ViewModel() {
                     "تم تسجيل عملية سيريتل كاش التجريبية في مركز العمليات",
                     "SyriaTel Cash demo operation logged in Operations Center"
                 )
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -626,7 +907,6 @@ class SyriaTelViewModel : ViewModel() {
                 status = OperationStatus.SUCCESS
             )
 
-            // Generate a smart usage notification if 50% alert is enabled and minutes are at 50%
             val shouldAddAlertNotif = newConfig.alert50Percent && !state.usageAlerts.alert50Percent
             val updatedNotifs = if (shouldAddAlertNotif) {
                 val notif = AppNotification(
@@ -648,7 +928,7 @@ class SyriaTelViewModel : ViewModel() {
                 transactions = listOf(newTx) + state.transactions,
                 notifications = updatedNotifs,
                 feedbackMessage = BiText("تم حفظ إعدادات تنبيهات الاستهلاك", "Usage alert preferences saved")
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -688,7 +968,7 @@ class SyriaTelViewModel : ViewModel() {
                 ),
                 transactions = listOf(newTx) + state.transactions,
                 feedbackMessage = BiText("تم حفظ التعديلات في ملفك الشخصي بنجاح", "Profile changes saved successfully")
-            )
+            ).withSyncedActiveAccount()
         }
         savePrefs(context)
     }
@@ -698,7 +978,7 @@ class SyriaTelViewModel : ViewModel() {
             state.copy(
                 notifications = state.notifications.map { it.copy(isRead = true) },
                 feedbackMessage = BiText("تم تحديد جميع الإشعارات كمقروءة", "All notifications marked as read")
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -708,7 +988,7 @@ class SyriaTelViewModel : ViewModel() {
                 notifications = state.notifications.map {
                     if (it.id == id) it.copy(isRead = true) else it
                 }
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -717,7 +997,7 @@ class SyriaTelViewModel : ViewModel() {
             state.copy(
                 notifications = emptyList(),
                 feedbackMessage = BiText("تم مسح جميع الإشعارات", "All notifications cleared")
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
@@ -753,7 +1033,7 @@ class SyriaTelViewModel : ViewModel() {
                 appPinLockEnabled = pinEnabled,
                 transactions = listOf(newTx) + state.transactions,
                 feedbackMessage = BiText("تم حفظ إعدادات الأمان بنجاح", "Security settings saved successfully")
-            )
+            ).withSyncedActiveAccount()
         }
     }
 
