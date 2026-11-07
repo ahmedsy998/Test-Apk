@@ -23,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -344,11 +345,14 @@ private fun PromoBannerCarousel(
                 elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(RoundedCornerShape(22.dp))
+                    .clipToBounds()
                     .testTag("promo_banner_$page")
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .clipToBounds()
                         .background(
                             Brush.linearGradient(
                                 colors = listOf(
@@ -433,25 +437,30 @@ private fun PromoBannerCarousel(
                             }
                         }
 
-                        // Dedicated Promotional Image side (~44% width)
-                        Box(
-                            contentAlignment = Alignment.Center,
+                        // Dedicated Responsive Promotional Image Container (~44% width, object-fit: cover, no gaps/overflow)
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(banner.secondaryHex),
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = Color.White.copy(alpha = 0.26f)
+                            ),
                             modifier = Modifier
                                 .weight(0.44f)
                                 .fillMaxHeight()
                                 .clip(RoundedCornerShape(16.dp))
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.White.copy(alpha = 0.28f),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
+                                .clipToBounds()
                         ) {
                             Image(
                                 painter = painterResource(id = banner.imageRes),
                                 contentDescription = banner.title.get(isArabic),
                                 contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center,
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clipToBounds()
                                     .testTag("promo_banner_image_$page")
                             )
                         }
@@ -853,11 +862,11 @@ private fun QuickActionsGridSection(
                 modifier = Modifier.weight(1f)
             )
             QuickActionShortcutCard(
-                title = if (isArabic) "معرفة رقمي" else "Know My Number",
-                subtitle = if (isArabic) "عرض ونسخ الرقم" else "View & copy SIM",
+                title = if (isArabic) "عرض أرقامي المسجلة" else "View My Registered Numbers",
+                subtitle = if (isArabic) "إدارة والتبديل بين أرقامك" else "Manage & switch your numbers",
                 icon = Icons.Filled.SimCard,
                 accentColor = SyriatelGreen,
-                testTag = "quick_action_know_number",
+                testTag = "quick_action_registered_numbers",
                 onClick = onKnowMyNumber,
                 modifier = Modifier.weight(1f)
             )
@@ -1268,3 +1277,369 @@ fun RechargeBalanceScreen(
         )
     }
 }
+
+// ==========================================
+// DEDICATED SCREEN — أرقامي المسجلة (MY REGISTERED NUMBERS)
+// ==========================================
+@Composable
+fun RegisteredNumbersScreen(
+    uiState: SyriatelUiState,
+    onBack: () -> Unit,
+    onSwitchAccount: (String) -> Unit,
+    onViewAccountDetails: (String) -> Unit,
+    onAddAnotherAccount: () -> Unit
+) {
+    val isArabic = uiState.isArabic
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .testTag("registered_numbers_screen")
+    ) {
+        SyriaTelSubScreenTopBar(
+            title = if (isArabic) "أرقامي المسجلة" else "My Registered Numbers",
+            subtitle = if (isArabic) {
+                "إدارة خطوطك المسجلة والتبديل الفوري بينها (${uiState.savedAccounts.size}/2)"
+            } else {
+                "Manage your registered lines & switch instantly (${uiState.savedAccounts.size}/2)"
+            },
+            onBack = onBack
+        )
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .verticalScroll(scrollState)
+                .padding(16.dp)
+        ) {
+            // Informative Prototype Banner
+            Surface(
+                color = SyriatelRed.copy(alpha = 0.08f),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, SyriatelRed.copy(alpha = 0.25f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(14.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.SimCard,
+                        contentDescription = null,
+                        tint = SyriatelRed,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = if (isArabic) {
+                            "تعرض هذه الصفحة جميع أرقامك المحفوظة محلياً داخل نظام إدارة الحسابات التجريبي مع إمكانية التبديل الفوري بينها."
+                        } else {
+                            "This page displays all phone numbers saved locally in the app's demo account management system with instant account switching."
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Registered Number Cards
+            uiState.savedAccounts.forEachIndexed { idx, account ->
+                val isActive = account.accountId == uiState.activeAccountId
+                val formattedBal = NumberFormat.getNumberInstance(Locale.US).format(account.balanceSyp)
+
+                Card(
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(
+                        width = if (isActive) 2.dp else 1.dp,
+                        color = if (isActive) SyriatelRed else MaterialTheme.colorScheme.outline
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = if (isActive) 4.dp else 2.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("registered_number_card_${account.accountId}")
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                UserAvatarCircle(
+                                    name = account.userProfile.displayFirstName(isArabic),
+                                    colorIndex = account.userProfile.avatarColorIndex,
+                                    size = 54.dp
+                                )
+                                Spacer(modifier = Modifier.width(14.dp))
+                                Column {
+                                    Text(
+                                        text = if (isArabic) "الحساب ${idx + 1}" else "Account ${idx + 1}",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            color = SyriatelRed,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                    Text(
+                                        text = account.userProfile.displayFullName(isArabic),
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = account.userProfile.phoneNumber,
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            color = SyriatelRed,
+                                            fontWeight = FontWeight.Bold,
+                                            letterSpacing = 0.6.sp
+                                        )
+                                    )
+                                }
+                            }
+
+                            if (isActive) {
+                                Surface(
+                                    color = SyriatelGreen,
+                                    shape = RoundedCornerShape(50),
+                                    modifier = Modifier.testTag("registered_number_active_badge_${account.accountId}")
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.CheckCircle,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(15.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(
+                                            text = if (isArabic) "الحساب الحالي" else "Active Account",
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Account Status & Summary Row
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column {
+                                Text(
+                                    text = if (isArabic) "حالة الخط ونوع الاشتراك" else "Line Status & Plan",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(SyriatelGreen)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "${account.userProfile.lineStatus.get(isArabic)} • ${account.userProfile.lineType.get(isArabic)}",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+
+                            Surface(
+                                color = SyriatelGreen.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(
+                                    text = if (isArabic) "$formattedBal ل.س" else "$formattedBal SYP",
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        color = SyriatelGreen,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Action Buttons: Switch to this account & View account details
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if (!isActive) {
+                                Button(
+                                    onClick = { onSwitchAccount(account.accountId) },
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = SyriatelRed,
+                                        contentColor = Color.White
+                                    ),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(46.dp)
+                                        .testTag("registered_numbers_switch_${account.accountId}")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.SwapHoriz,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (isArabic) "التبديل إلى هذا الحساب" else "Switch to Account",
+                                        style = MaterialTheme.typography.labelLarge.copy(
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+
+                            OutlinedButton(
+                                onClick = { onViewAccountDetails(account.accountId) },
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, SyriatelRed.copy(alpha = 0.6f)),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = SyriatelRed),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(46.dp)
+                                    .testTag("registered_numbers_details_${account.accountId}")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Badge,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (isArabic) "عرض تفاصيل الحساب" else "View Account Details",
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        color = SyriatelRed,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Friendly Empty State for Secondary Account + Add Another Account Action
+            if (uiState.canAddAnotherAccount) {
+                Card(
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("registered_numbers_empty_secondary_card")
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(SyriatelRed.copy(alpha = 0.12f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PersonAddAlt1,
+                                contentDescription = null,
+                                tint = SyriatelRed,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = if (isArabic) "لا يوجد رقم إضافي مسجل حالياً" else "No Secondary Number Registered Yet",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = if (isArabic) {
+                                "يمكنك ربط رقم سيريتل تجريبي ثانٍ بحسابك والتبديل الفوري بين الرقمين في أي وقت."
+                            } else {
+                                "You can link a second demo SyriaTel number and switch effortlessly between both lines anytime."
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = onAddAnotherAccount,
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SyriatelRed),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("registered_numbers_add_account_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isArabic) "إضافة حساب آخر" else "Add Another Account",
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

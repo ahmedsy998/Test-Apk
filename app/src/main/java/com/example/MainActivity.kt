@@ -153,7 +153,7 @@ fun SyriaTelApp(
                                     onOpenNotifications = { viewModel.navigateTo(AppScreen.NOTIFICATIONS) },
                                     onOpenSettings = { viewModel.navigateTo(AppScreen.SETTINGS) },
                                     onOpenRecharge = { viewModel.navigateTo(AppScreen.RECHARGE_BALANCE) },
-                                    onOpenKnowMyNumber = { viewModel.setShowKnowMyNumberModal(true) },
+                                    onOpenKnowMyNumber = { viewModel.navigateTo(AppScreen.REGISTERED_NUMBERS) },
                                     onOpenOffersCategory = { cat -> viewModel.navigateToOffersCategory(cat) },
                                     onOpenServices = { viewModel.navigateTo(AppScreen.SERVICES) },
                                     onOpenSmartUsageCenter = { viewModel.navigateTo(AppScreen.SMART_USAGE_CENTER) },
@@ -329,6 +329,25 @@ fun SyriaTelApp(
                                     onBack = { viewModel.navigateBack() },
                                     onConfirmRecharge = { phone, amount ->
                                         viewModel.rechargeBalance(phone, amount, context)
+                                    }
+                                )
+                            }
+
+                            AppScreen.REGISTERED_NUMBERS -> {
+                                RegisteredNumbersScreen(
+                                    uiState = uiState,
+                                    onBack = { viewModel.navigateBack() },
+                                    onSwitchAccount = { accId ->
+                                        viewModel.switchAccount(accId, context)
+                                    },
+                                    onViewAccountDetails = { accId ->
+                                        if (uiState.activeAccountId != accId) {
+                                            viewModel.switchAccount(accId, context)
+                                        }
+                                        viewModel.navigateTo(AppScreen.PREMIUM_PROFILE)
+                                    },
+                                    onAddAnotherAccount = {
+                                        viewModel.navigateTo(AppScreen.ADD_ACCOUNT)
                                     }
                                 )
                             }

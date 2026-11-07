@@ -60,13 +60,18 @@ class ExampleUnitTest {
     assertEquals(6, banners.size)
     assertEquals(6, banners.map { it.imageRes }.distinct().size)
 
-    // 8. Multi-Account System: Add second account, verify isolated data, switch back and forth, and remove
+    // 8. Navigate to "أرقامي المسجلة" (REGISTERED_NUMBERS) via Quick Action and test Multi-Account System
     val account1Balance = vm.uiState.value.balanceSyp
     val account1Phone = vm.uiState.value.userProfile.phoneNumber
+    vm.navigateTo(AppScreen.REGISTERED_NUMBERS)
+    assertEquals(AppScreen.REGISTERED_NUMBERS, vm.uiState.value.currentScreen)
     assertTrue(vm.uiState.value.canAddAnotherAccount)
     assertEquals(1, vm.uiState.value.savedAccounts.size)
 
+    vm.navigateTo(AppScreen.ADD_ACCOUNT)
+    assertEquals(AppScreen.ADD_ACCOUNT, vm.uiState.value.currentScreen)
     vm.addSecondAccount("سارة", "الحموي", "0988654321")
+    assertEquals(AppScreen.REGISTERED_NUMBERS, vm.uiState.value.currentScreen)
     assertEquals(2, vm.uiState.value.savedAccounts.size)
     assertFalse(vm.uiState.value.canAddAnotherAccount)
     assertEquals("acc_2", vm.uiState.value.activeAccountId)

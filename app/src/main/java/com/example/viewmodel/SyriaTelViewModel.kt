@@ -450,6 +450,8 @@ class SyriaTelViewModel : ViewModel() {
             ).copy(accountId = newAccId)
 
             val updatedAccounts = state.savedAccounts + newSnapshot
+            val returnScreen = state.backStack.lastOrNull { it != AppScreen.ADD_ACCOUNT } ?: AppScreen.SETTINGS
+            val updatedBackStack = state.backStack.filter { it != AppScreen.ADD_ACCOUNT }.dropLast(1)
             if (switchImmediately) {
                 state.copy(
                     activeAccountId = newSnapshot.accountId,
@@ -470,8 +472,8 @@ class SyriaTelViewModel : ViewModel() {
                     services = newSnapshot.services,
                     notifications = newSnapshot.notifications,
                     transactions = newSnapshot.transactions,
-                    currentScreen = AppScreen.SETTINGS,
-                    backStack = state.backStack.filter { it != AppScreen.ADD_ACCOUNT },
+                    currentScreen = returnScreen,
+                    backStack = updatedBackStack,
                     feedbackMessage = BiText(
                         "تمت إضافة الحساب (${newSnapshot.userProfile.phoneNumber}) والتبديل إليه بنجاح",
                         "Account (${newSnapshot.userProfile.phoneNumber}) added and activated"
@@ -480,8 +482,8 @@ class SyriaTelViewModel : ViewModel() {
             } else {
                 state.copy(
                     savedAccounts = updatedAccounts,
-                    currentScreen = AppScreen.SETTINGS,
-                    backStack = state.backStack.filter { it != AppScreen.ADD_ACCOUNT },
+                    currentScreen = returnScreen,
+                    backStack = updatedBackStack,
                     feedbackMessage = BiText(
                         "تمت إضافة الحساب الثاني (${newSnapshot.userProfile.phoneNumber}) بنجاح",
                         "Secondary account (${newSnapshot.userProfile.phoneNumber}) added successfully"

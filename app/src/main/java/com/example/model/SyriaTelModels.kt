@@ -26,7 +26,8 @@ enum class AppScreen {
     CUSTOMER_SUPPORT,
     PRIVACY_POLICY,
     TERMS_OF_USE,
-    RECHARGE_BALANCE
+    RECHARGE_BALANCE,
+    REGISTERED_NUMBERS
 }
 
 data class UserProfile(
